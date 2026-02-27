@@ -516,6 +516,7 @@
 <div class="confetti-wrap" id="confettiWrap"></div>
 
 <script src="../js/utils.js"></script>
+<script src="../js/app.js"></script>
 <script>
   /* ── STATE ── */
   let heads = 0, tails = 0, total = 0;
@@ -745,17 +746,7 @@
     const stars = earnedStars || (total > 0 ? 1 : 0);
     const xp = stars * 30 + total * 2;
 
-    // Save to localStorage
-    localStorage.setItem('prob-module-1', JSON.stringify({
-      stars,
-      completed: true,
-      xp,
-      flips: total,
-      heads,
-      tails
-    }));
-
-    // Notify app if available
+    // Save via ProbabilityApp (writes to the correct localStorage key)
     if (window.ProbabilityApp?.completeModule) {
       window.ProbabilityApp.completeModule('01-coins', stars);
     }
