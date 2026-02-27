@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="עולם ההסתברות - אתר לימודי אינטראקטיבי להסתברות לילדים בגילאי 10-12" />
+  <title>עולם ההסתברות</title>
+
+  <!-- SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FF6B35'/><text y='.9em' font-size='80' x='10'>🎲</text></svg>" />
+
+  <!-- Google Fonts: Heebo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="site-logo">
+        <span class="logo-icon">🎲</span>
+        <span class="logo-text">עולם ההסתברות</span>
+      </div>
+      <div class="header-stats">
+        <div class="xp-display" id="xp-display">
+          <span class="xp-icon">⚡</span>
+          <span class="xp-value" id="xp-value">0</span>
+          <span class="xp-label">XP</span>
+        </div>
+        <div class="stars-total" id="stars-total">
+          <span class="star filled">★</span>
+          <span class="stars-count" id="stars-count">0</span>
+          <span class="stars-max">/18</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          <span class="title-line-1">ברוכים הבאים ל</span>
+          <span class="title-line-2">עולם ההסתברות! 🌟</span>
+        </h1>
+        <p class="hero-subtitle">
+          למד להבין את סיכויי ההצלחה, לחשב אפשרויות ולחזות תוצאות —
+          כמו מדען נתונים אמיתי!
+        </p>
+        <div class="hero-badges">
+          <span class="badge badge-orange">6 עולמות</span>
+          <span class="badge badge-teal">50+ תרגילים</span>
+          <span class="badge badge-purple">18 כוכבים</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="floating-emoji float-1">🪙</div>
+        <div class="floating-emoji float-2">🎲</div>
+        <div class="floating-emoji float-3">💎</div>
+        <div class="floating-emoji float-4">🌟</div>
+        <div class="floating-emoji float-5">🏆</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERALL PROGRESS -->
+  <section class="overall-progress" aria-label="התקדמות כללית">
+    <div class="container">
+      <div class="progress-header">
+        <h2 class="progress-title">ההתקדמות שלך 🗺️</h2>
+        <span class="progress-fraction" id="progress-fraction">0 / 6 עולמות</span>
+      </div>
+      <div class="progress-bar-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6" id="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%"></div>
+        <div class="progress-bar-label" id="progress-bar-label">0%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULE CARDS GRID -->
+  <main class="modules-section">
+    <div class="container">
+      <h2 class="section-title">בחר עולם להרפתקה 🗺️</h2>
+      <div class="modules-grid" id="modules-grid">
+
+        <!-- Module 1: Coins -->
+        <article class="module-card world-1" data-module="01-coins" data-unlock-order="0">
+          <div class="card-lock-overlay" id="lock-01-coins" aria-hidden="true">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">השלם את השלב הקודם</span>
+          </div>
+          <div class="card-top">
+            <span class="module-emoji">🪙</span>
+            <div class="module-stars" id="stars-01-coins" aria-label="0 מתוך 3 כוכבים">
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="module-title">עולם המטבעות</h3>
+            <p class="module-desc">עֵץ, פּלי, עֵץ-פּלי — גלה את המסתורין של זריקת מטבע! 🎯</p>
+          </div>
+          <div class="card-footer">
+            <div class="module-tag">רמה: מתחיל</div>
+            <a href="modules/01-coins.html" class="btn btn-start" id="btn-01-coins">
+              <span>התחל</span>
+              <span class="btn-arrow">←</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Module 2: Dice -->
+        <article class="module-card world-2" data-module="02-dice" data-unlock-order="1">
+          <div class="card-lock-overlay" id="lock-02-dice" aria-hidden="true">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">השלם את השלב הקודם</span>
+          </div>
+          <div class="card-top">
+            <span class="module-emoji">🎲</span>
+            <div class="module-stars" id="stars-02-dice" aria-label="0 מתוך 3 כוכבים">
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="module-title">עולם הקובייה</h3>
+            <p class="module-desc">כמה סיכויים יש לזרוק 6? גלה עם קוביות וירטואליות! 🎯</p>
+          </div>
+          <div class="card-footer">
+            <div class="module-tag">רמה: מתחיל</div>
+            <a href="modules/02-dice.html" class="btn btn-start" id="btn-02-dice">
+              <span>התחל</span>
+              <span class="btn-arrow">←</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Module 3: Spinners -->
+        <article class="module-card world-3" data-module="03-spinners" data-unlock-order="2">
+          <div class="card-lock-overlay" id="lock-03-spinners" aria-hidden="true">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">השלם את השלב הקודם</span>
+          </div>
+          <div class="card-top">
+            <span class="module-emoji">🎡</span>
+            <div class="module-stars" id="stars-03-spinners" aria-label="0 מתוך 3 כוכבים">
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="module-title">גלגל המזל</h3>
+            <p class="module-desc">סובב גלגל מזל וגלה כיצד שטח הצבע קובע את הסיכוי! 🎡</p>
+          </div>
+          <div class="card-footer">
+            <div class="module-tag">רמה: בינוני</div>
+            <a href="modules/03-spinners.html" class="btn btn-start" id="btn-03-spinners">
+              <span>התחל</span>
+              <span class="btn-arrow">←</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Module 4: Cards -->
+        <article class="module-card world-4" data-module="04-cards" data-unlock-order="3">
+          <div class="card-lock-overlay" id="lock-04-cards" aria-hidden="true">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">השלם את השלב הקודם</span>
+          </div>
+          <div class="card-top">
+            <span class="module-emoji">♠️</span>
+            <div class="module-stars" id="stars-04-cards" aria-label="0 מתוך 3 כוכבים">
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="module-title">קלפים וסיכויים</h3>
+            <p class="module-desc">שלוף קלפים מחפיסה וגלה את הסתברות הקלפים! ♠️♥️</p>
+          </div>
+          <div class="card-footer">
+            <div class="module-tag">רמה: בינוני</div>
+            <a href="modules/04-cards.html" class="btn btn-start" id="btn-04-cards">
+              <span>התחל</span>
+              <span class="btn-arrow">←</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Module 5: Bag -->
+        <article class="module-card world-5" data-module="05-bag" data-unlock-order="4">
+          <div class="card-lock-overlay" id="lock-05-bag" aria-hidden="true">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">השלם את השלב הקודם</span>
+          </div>
+          <div class="card-top">
+            <span class="module-emoji">🎒</span>
+            <div class="module-stars" id="stars-05-bag" aria-label="0 מתוך 3 כוכבים">
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="module-title">שקית הפלא</h3>
+            <p class="module-desc">שלוף כדורים מתוך שקית וחשב מה הסיכוי לצבע שאתה רוצה! 🎨</p>
+          </div>
+          <div class="card-footer">
+            <div class="module-tag">רמה: מתקדם</div>
+            <a href="modules/05-bag.html" class="btn btn-start" id="btn-05-bag">
+              <span>התחל</span>
+              <span class="btn-arrow">←</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Module 6: Quiz -->
+        <article class="module-card world-6" data-module="06-quiz" data-unlock-order="5">
+          <div class="card-lock-overlay" id="lock-06-quiz" aria-hidden="true">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">השלם את השלב הקודם</span>
+          </div>
+          <div class="card-top">
+            <span class="module-emoji">🏆</span>
+            <div class="module-stars" id="stars-06-quiz" aria-label="0 מתוך 3 כוכבים">
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+              <span class="star" data-filled="false">★</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="module-title">אלוף ההסתברות</h3>
+            <p class="module-desc">המבחן הסופי! ענה על 10 שאלות ותהיה אלוף ההסתברות! 🏆</p>
+          </div>
+          <div class="card-footer">
+            <div class="module-tag">רמה: מתקדם</div>
+            <a href="modules/06-quiz.html" class="btn btn-start" id="btn-06-quiz">
+              <span>התחל</span>
+              <span class="btn-arrow">←</span>
+            </a>
+          </div>
+        </article>
+
+      </div><!-- /.modules-grid -->
+    </div><!-- /.container -->
+  </main>
+
+  <!-- CELEBRATION OVERLAY -->
+  <div class="celebration-overlay" id="celebration-overlay" aria-live="polite" aria-hidden="true">
+    <div class="celebration-content">
+      <div class="celebration-stars" id="celebration-stars"></div>
+      <div class="celebration-text" id="celebration-text">כל הכבוד!</div>
+      <button class="btn btn-celebrate" onclick="document.getElementById('celebration-overlay').classList.remove('active'); document.getElementById('celebration-overlay').setAttribute('aria-hidden','true');">
+        המשך ←
+      </button>
+    </div>
+    <div class="confetti-container" id="confetti-container"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-text">
+        🌟 כל צעד קטן הוא התקדמות גדולה! המשך ללמוד ולחקור! 🚀
+      </p>
+      <p class="footer-sub">עולם ההסתברות • לומדים ומתקדמים יחד</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

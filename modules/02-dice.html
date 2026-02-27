@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ארמון הקוביות — למד הסתברות עם קוביות וירטואליות לילדים בגילאי 10-12" />
+  <title>ארמון הקוביות 🎲 — עולם ההסתברות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <style>
+    .module-main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+    .teaching-box {
+      background: linear-gradient(135deg, #ffe0e8, #ffb3c6);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .teaching-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .teaching-text { font-size: 0.95rem; line-height: 1.6; font-weight: 500; }
+
+    /* ── DICE STAGE ── */
+    .dice-stage {
+      background: linear-gradient(145deg, #d8fef0, #a8f5da);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 2rem 1rem;
+      margin-bottom: 1.75rem;
+      text-align: center;
+    }
+
+    .mode-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .btn-mode {
+      background: white;
+      color: var(--color-dark);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.5rem 1.2rem;
+      border-radius: var(--radius-md);
+      border: 3px solid var(--color-dark);
+      box-shadow: 3px 3px 0 var(--color-dark);
+      cursor: pointer;
+      transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+      font-family: var(--font-main);
+    }
+    .btn-mode.active { background: var(--color-accent-2); color: white; }
+    .btn-mode:hover { transform: translateY(-2px); }
+
+    /* CSS 3D Dice */
+    .dice-area {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      min-height: 120px;
+      align-items: center;
+    }
+
+    .die-container {
+      perspective: 400px;
+      width: 90px;
+      height: 90px;
+    }
+    .die {
+      width: 90px;
+      height: 90px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(-20deg) rotateY(30deg);
+      transition: transform 0.1s;
+    }
+    .die.rolling {
+      animation: diceRoll3D 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    @keyframes diceRoll3D {
+      0%   { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      20%  { transform: rotateX(180deg) rotateY(120deg) rotateZ(60deg) scale(1.2); }
+      40%  { transform: rotateX(360deg) rotateY(240deg) rotateZ(120deg) scale(0.9); }
+      60%  { transform: rotateX(480deg) rotateY(320deg) rotateZ(180deg) scale(1.1); }
+      80%  { transform: rotateX(560deg) rotateY(380deg) rotateZ(200deg) scale(0.95); }
+      100% { transform: rotateX(var(--end-rx, 0deg)) rotateY(var(--end-ry, 0deg)) rotateZ(0deg) scale(1); }
+    }
+
+    .die-face {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      background: white;
+      border: 3px solid #1A1A2E;
+      border-radius: 14px;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      backface-visibility: hidden;
+    }
+    /* face positions */
+    .die-face.f1 { transform: translateZ(45px); }
+    .die-face.f6 { transform: rotateY(180deg) translateZ(45px); }
+    .die-face.f2 { transform: rotateY(90deg) translateZ(45px); }
+    .die-face.f5 { transform: rotateY(-90deg) translateZ(45px); }
+    .die-face.f3 { transform: rotateX(90deg) translateZ(45px); }
+    .die-face.f4 { transform: rotateX(-90deg) translateZ(45px); }
+
+    /* Dots layout */
+    .dots {
+      display: grid;
+      width: 64px;
+      height: 64px;
+      padding: 4px;
+      gap: 3px;
+    }
+    .dot {
+      width: 13px;
+      height: 13px;
+      background: #1A1A2E;
+      border-radius: 50%;
+      justify-self: center;
+      align-self: center;
+    }
+    /* 1-dot */
+    .dots-1 { grid-template: 1fr / 1fr; }
+    /* 2-dots */
+    .dots-2 { grid-template: 1fr 1fr / 1fr; }
+    /* 3-dots */
+    .dots-3 { grid-template: 1fr 1fr 1fr / 1fr; }
+    /* 4-dots */
+    .dots-4 { grid-template: 1fr 1fr / 1fr 1fr; }
+    /* 5-dots */
+    .dots-5 { grid-template: 1fr 1fr 1fr / 1fr 1fr; }
+    .dots-5 .dot:nth-child(3) { grid-column: 1 / 3; }
+    /* 6-dots */
+    .dots-6 { grid-template: 1fr 1fr 1fr / 1fr 1fr; }
+
+    /* Result display */
+    .dice-result-text {
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      min-height: 2rem;
+    }
+    .sum-badge {
+      display: inline-block;
+      background: var(--color-accent-1);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      padding: 0.25rem 1rem;
+      font-size: 1.6rem;
+      font-weight: 900;
+      box-shadow: 3px 3px 0 var(--color-dark);
+    }
+
+    .btn-roll {
+      background: var(--color-accent-4);
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 900;
+      padding: 0.8rem 2.2rem;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-roll:hover { transform: translateY(-3px); box-shadow: var(--shadow-fun-hover); }
+    .btn-roll:active { transform: translateY(2px); box-shadow: 1px 1px 0 var(--color-dark); }
+    .btn-roll:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── FREQUENCY TRACKER ── */
+    .freq-section {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .freq-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 1rem; text-align: center; }
+    .freq-bars {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-end;
+      justify-content: center;
+      height: 110px;
+    }
+    .freq-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      flex: 1;
+      max-width: 50px;
+    }
+    .freq-count { font-size: 0.7rem; font-weight: 700; }
+    .freq-bar-track {
+      width: 100%;
+      height: 80px;
+      background: #f0f0f0;
+      border: 2px solid #ccc;
+      border-radius: 4px 4px 0 0;
+      display: flex;
+      align-items: flex-end;
+    }
+    .freq-bar-fill {
+      width: 100%;
+      transition: height 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      border-radius: 3px 3px 0 0;
+      min-height: 2px;
+    }
+    .freq-num { font-size: 0.8rem; font-weight: 900; }
+
+    /* colors for dice 1-6 */
+    .dcolor-1 { background: #EF476F; }
+    .dcolor-2 { background: #FF6B35; }
+    .dcolor-3 { background: #FFD166; }
+    .dcolor-4 { background: #06D6A0; }
+    .dcolor-5 { background: #4ECDC4; }
+    .dcolor-6 { background: #845EC2; }
+
+    /* Outcome grid (2 dice) */
+    .outcome-grid-section {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+      display: none;
+    }
+    .outcome-grid-section.visible { display: block; }
+    .grid-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.75rem; text-align: center; }
+    .outcome-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      max-width: 360px;
+      margin: 0 auto;
+    }
+    .og-header {
+      background: #1A1A2E;
+      color: white;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+    }
+    .og-cell {
+      background: #f5f5f5;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .og-cell.sum-2  { background: #ffcdd2; }
+    .og-cell.sum-3  { background: #ffccbc; }
+    .og-cell.sum-4  { background: #fff9c4; }
+    .og-cell.sum-5  { background: #f0f4c3; }
+    .og-cell.sum-6  { background: #c8e6c9; }
+    .og-cell.sum-7  { background: #b2dfdb; }
+    .og-cell.sum-8  { background: #b3e5fc; }
+    .og-cell.sum-9  { background: #e1bee7; }
+    .og-cell.sum-10 { background: #fce4ec; }
+    .og-cell.sum-11 { background: #f8bbd0; }
+    .og-cell.sum-12 { background: #c5cae9; }
+    .og-cell.highlighted {
+      transform: scale(1.25);
+      outline: 3px solid var(--color-dark);
+      z-index: 10;
+      box-shadow: 0 0 0 2px var(--color-accent-4);
+    }
+
+    /* ── CHALLENGE SECTION ── */
+    .challenge-section {
+      background: linear-gradient(145deg, #ece0ff, #d4b8ff);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 1.5rem 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .challenge-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem; }
+    .challenge-question { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.5; }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .option-btn {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      box-shadow: 3px 3px 0 var(--color-dark);
+      padding: 0.65rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+      font-family: var(--font-main);
+    }
+    .option-btn:hover { transform: translateY(-2px); box-shadow: 4px 4px 0 var(--color-dark); }
+    .option-btn.correct { background: #06D6A0; animation: bounceIn 0.4s both; }
+    .option-btn.wrong   { background: #EF476F; color: white; animation: shake 0.4s both; }
+    .option-btn:disabled { cursor: default; }
+
+    .q-progress { font-size: 0.85rem; font-weight: 700; color: #666; margin-bottom: 0.5rem; }
+    .q-feedback {
+      font-size: 1rem;
+      font-weight: 700;
+      min-height: 1.5rem;
+      text-align: center;
+      transition: opacity 0.2s;
+    }
+    .q-feedback.correct { color: #06D6A0; }
+    .q-feedback.wrong   { color: #EF476F; }
+
+    .challenge-score {
+      font-size: 1.2rem;
+      font-weight: 900;
+      text-align: center;
+      display: none;
+      padding: 1rem;
+    }
+    .challenge-score.show { display: block; }
+
+    .finish-section { text-align: center; padding: 1rem 0; }
+    .btn-finish {
+      background: linear-gradient(135deg, #FFD166, #FF6B35);
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 900;
+      padding: 1rem 2.5rem;
+      border-radius: var(--radius-xl);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-finish:hover { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-fun-hover); }
+
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 900; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<header class="module-header">
+  <div class="module-header-inner">
+    <a href="../index.html" class="back-btn">← חזרה לבית</a>
+    <span style="font-size:1.2rem;font-weight:900;color:white;text-shadow:2px 2px 0 rgba(0,0,0,0.3);">עולם ההסתברות</span>
+    <span style="font-size:1.5rem;">🎲</span>
+  </div>
+</header>
+
+<main class="module-main">
+
+  <div class="teaching-box">
+    <span class="teaching-icon">💡</span>
+    <p class="teaching-text">
+      קוביה רגילה היא <strong>קוביה שוויונית</strong> — לכל אחד מ-6 הצדדים (1-6) סיכוי שווה: <strong>1/6 ≈ 16.7%</strong>.
+      כששמים שתי קוביות, הסיכוי לכל סכום שונה — <strong>7</strong> הוא הסכום הסביר ביותר!
+    </p>
+  </div>
+
+  <!-- Dice stage -->
+  <div class="dice-stage">
+    <div class="mode-toggle">
+      <button class="btn-mode active" id="btnMode1" onclick="setMode(1)">🎲 קוביה אחת</button>
+      <button class="btn-mode" id="btnMode2" onclick="setMode(2)">🎲🎲 שתי קוביות</button>
+    </div>
+
+    <div class="dice-area" id="diceArea">
+      <!-- dice injected by JS -->
+    </div>
+
+    <div class="dice-result-text" id="diceResultText">לחץ כדי להטיל!</div>
+    <div style="margin-bottom:1rem;" id="sumBadgeWrap"></div>
+    <button class="btn-roll" id="btnRoll" onclick="rollDice()">🎲 הטל קוביה!</button>
+  </div>
+
+  <!-- Frequency tracker -->
+  <div class="freq-section">
+    <div class="freq-title" id="freqTitle">📊 תדירות תוצאות (1-6)</div>
+    <div class="freq-bars" id="freqBars"><!-- filled by JS --></div>
+  </div>
+
+  <!-- 2-dice outcome grid -->
+  <div class="outcome-grid-section" id="outcomeGridSection">
+    <div class="grid-title">🗂️ טבלת כל התוצאות האפשריות (6×6 = 36)</div>
+    <div class="outcome-grid" id="outcomeGrid"><!-- filled by JS --></div>
+    <p style="text-align:center;font-size:0.85rem;color:#555;margin-top:0.75rem;">
+      התא המסומן = התוצאה האחרונה | הצבע = הסכום
+    </p>
+  </div>
+
+  <!-- Challenge section -->
+  <div class="challenge-section">
+    <div class="challenge-title">🎯 אתגר: שאלות הסתברות!</div>
+    <div class="q-progress" id="qProgress">שאלה 1 מתוך 3</div>
+    <div class="challenge-question" id="challengeQuestion">טוען...</div>
+    <div class="options-grid" id="optionsGrid"><!-- filled by JS --></div>
+    <div class="q-feedback" id="qFeedback"></div>
+    <div class="challenge-score" id="challengeScore"></div>
+  </div>
+
+  <div class="finish-section">
+    <button class="btn-finish" onclick="finishModule()">⭐ סיים וקבל כוכבים!</button>
+  </div>
+
+</main>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script src="../js/utils.js"></script>
+<script>
+  /* ── STATE ── */
+  let diceMode = 1;
+  let isRolling = false;
+  let lastRoll = [1];
+  let freq1 = [0, 0, 0, 0, 0, 0];  // counts for 1-6
+  let freq2 = Array(13).fill(0);   // counts for sum 2-12
+  let totalRolls = 0;
+
+  // Challenge
+  const QUESTIONS = [
+    {
+      q: 'בקוביה רגילה, מה הסיכוי לקבל את המספר 6?',
+      options: ['א) 1/2', 'ב) 1/6', 'ג) 1/3', 'ד) 6/6'],
+      correct: 1,
+      explain: 'נכון! יש 6 צדדים ורק אחד מהם הוא 6, לכן P(6) = 1/6 ≈ 16.7%'
+    },
+    {
+      q: 'בקוביה רגילה, מה הסיכוי לקבל מספר זוגי?',
+      options: ['א) 1/6', 'ב) 2/6', 'ג) 3/6 = 1/2', 'ד) 4/6'],
+      correct: 2,
+      explain: 'נכון! המספרים הזוגיים הם 2, 4, 6 — שלושה מתוך שישה. P(זוגי) = 3/6 = 1/2'
+    },
+    {
+      q: 'בשתי קוביות, איזה סכום הכי נפוץ?',
+      options: ['א) סכום 2', 'ב) סכום 7', 'ג) סכום 12', 'ד) סכום 6'],
+      correct: 1,
+      explain: 'נכון! 7 אפשרי ב-6 דרכים מתוך 36: (1+6, 2+5, 3+4, 4+3, 5+2, 6+1) — יותר מכל סכום אחר!'
+    }
+  ];
+
+  let currentQ = 0;
+  let correctCount = 0;
+  let challengeDone = false;
+  let earnedStars = 0;
+
+  /* ── DICE DOTS ── */
+  function makeDots(n) {
+    const div = document.createElement('div');
+    div.className = `dots dots-${n}`;
+    for (let i = 0; i < n; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot';
+      div.appendChild(d);
+    }
+    return div;
+  }
+
+  function makeDie(id) {
+    const container = document.createElement('div');
+    container.className = 'die-container';
+    const die = document.createElement('div');
+    die.className = 'die';
+    die.id = `die-${id}`;
+    const faces = [1, 6, 2, 5, 3, 4];
+    const classes = ['f1', 'f6', 'f2', 'f5', 'f3', 'f4'];
+    faces.forEach((n, i) => {
+      const face = document.createElement('div');
+      face.className = `die-face ${classes[i]}`;
+      face.appendChild(makeDots(n));
+      die.appendChild(face);
+    });
+    container.appendChild(die);
+    return { container, die };
+  }
+
+  /* ── INIT DICE ── */
+  function initDice() {
+    const area = document.getElementById('diceArea');
+    area.innerHTML = '';
+    const count = diceMode;
+    for (let i = 0; i < count; i++) {
+      const { container } = makeDie(i);
+      area.appendChild(container);
+    }
+    initFreqBars();
+    initOutcomeGrid();
+    document.getElementById('outcomeGridSection').classList.toggle('visible', diceMode === 2);
+    document.getElementById('freqTitle').textContent =
+      diceMode === 1 ? '📊 תדירות תוצאות (1-6)' : '📊 תדירות סכומים (2-12)';
+    document.getElementById('btnRoll').textContent = diceMode === 1 ? '🎲 הטל קוביה!' : '🎲🎲 הטל שתי קוביות!';
+  }
+
+  /* ── OUTCOME GRID ── */
+  function initOutcomeGrid() {
+    const grid = document.getElementById('outcomeGrid');
+    grid.innerHTML = '';
+    // top-left corner
+    const corner = document.createElement('div');
+    corner.className = 'og-header';
+    corner.textContent = '+';
+    grid.appendChild(corner);
+    // column headers
+    for (let c = 1; c <= 6; c++) {
+      const h = document.createElement('div');
+      h.className = 'og-header';
+      h.textContent = c;
+      grid.appendChild(h);
+    }
+    // rows
+    for (let r = 1; r <= 6; r++) {
+      const rh = document.createElement('div');
+      rh.className = 'og-header';
+      rh.textContent = r;
+      grid.appendChild(rh);
+      for (let c = 1; c <= 6; c++) {
+        const cell = document.createElement('div');
+        const sum = r + c;
+        cell.className = `og-cell sum-${sum}`;
+        cell.id = `og-${r}-${c}`;
+        cell.textContent = sum;
+        grid.appendChild(cell);
+      }
+    }
+  }
+
+  /* ── FREQ BARS ── */
+  function initFreqBars() {
+    const bars = document.getElementById('freqBars');
+    bars.innerHTML = '';
+    const nums = diceMode === 1 ? [1,2,3,4,5,6] : [2,3,4,5,6,7,8,9,10,11,12];
+    const colors = ['dcolor-1','dcolor-2','dcolor-3','dcolor-4','dcolor-5','dcolor-6'];
+
+    nums.forEach((n, i) => {
+      const col = document.createElement('div');
+      col.className = 'freq-col';
+
+      const cnt = document.createElement('div');
+      cnt.className = 'freq-count';
+      cnt.id = `freq-cnt-${n}`;
+      cnt.textContent = '0';
+
+      const track = document.createElement('div');
+      track.className = 'freq-bar-track';
+
+      const fill = document.createElement('div');
+      fill.className = `freq-bar-fill ${colors[i % 6]}`;
+      fill.id = `freq-bar-${n}`;
+      fill.style.height = '0%';
+
+      track.appendChild(fill);
+
+      const lbl = document.createElement('div');
+      lbl.className = 'freq-num';
+      lbl.textContent = n;
+
+      col.appendChild(cnt);
+      col.appendChild(track);
+      col.appendChild(lbl);
+      bars.appendChild(col);
+    });
+  }
+
+  function updateFreqBars(values) {
+    const arr = diceMode === 1 ? freq1 : freq2;
+    const nums = diceMode === 1 ? [1,2,3,4,5,6] : [2,3,4,5,6,7,8,9,10,11,12];
+    const maxVal = Math.max(...arr) || 1;
+
+    nums.forEach(n => {
+      const idx = diceMode === 1 ? n - 1 : n;
+      const count = arr[idx] || 0;
+      const pct = (count / maxVal) * 100;
+      const bar = document.getElementById(`freq-bar-${n}`);
+      const cnt = document.getElementById(`freq-cnt-${n}`);
+      if (bar) bar.style.height = pct + '%';
+      if (cnt) cnt.textContent = count;
+    });
+  }
+
+  /* ── ROLL DICE ── */
+  function setMode(m) {
+    if (isRolling) return;
+    diceMode = m;
+    freq1 = [0,0,0,0,0,0];
+    freq2 = Array(13).fill(0);
+    totalRolls = 0;
+    document.getElementById('btnMode1').classList.toggle('active', m === 1);
+    document.getElementById('btnMode2').classList.toggle('active', m === 2);
+    document.getElementById('diceResultText').textContent = 'לחץ כדי להטיל!';
+    document.getElementById('sumBadgeWrap').innerHTML = '';
+    initDice();
+  }
+
+  /* face-to-rotation lookup for showing top face */
+  const faceRot = {
+    1: { rx: 0,   ry: 0 },
+    2: { rx: 0,   ry: -90 },
+    3: { rx: -90, ry: 0 },
+    4: { rx: 90,  ry: 0 },
+    5: { rx: 0,   ry: 90 },
+    6: { rx: 0,   ry: 180 }
+  };
+
+  function rollDice() {
+    if (isRolling) return;
+    isRolling = true;
+    document.getElementById('btnRoll').disabled = true;
+    ProbabilityUtils.playSound('flip');
+
+    const count = diceMode;
+    const results = Array.from({length: count}, () => ProbabilityUtils.rollDie(6));
+    totalRolls++;
+
+    // Update frequency
+    if (diceMode === 1) {
+      freq1[results[0] - 1]++;
+    } else {
+      const sum = results[0] + results[1];
+      freq2[sum]++;
+    }
+
+    // Animate dice
+    for (let i = 0; i < count; i++) {
+      const die = document.getElementById(`die-${i}`);
+      const val = results[i];
+      const rot = faceRot[val];
+
+      die.classList.remove('rolling');
+      void die.offsetWidth;
+      die.style.setProperty('--end-rx', `${rot.rx}deg`);
+      die.style.setProperty('--end-ry', `${rot.ry}deg`);
+      die.classList.add('rolling');
+    }
+
+    setTimeout(() => {
+      // Apply final rotation
+      for (let i = 0; i < count; i++) {
+        const die = document.getElementById(`die-${i}`);
+        const rot = faceRot[results[i]];
+        die.classList.remove('rolling');
+        die.style.transform = `rotateX(${rot.rx}deg) rotateY(${rot.ry}deg)`;
+      }
+
+      if (diceMode === 1) {
+        document.getElementById('diceResultText').textContent = `יצא ${results[0]}!`;
+        document.getElementById('sumBadgeWrap').innerHTML = '';
+      } else {
+        const sum = results[0] + results[1];
+        document.getElementById('diceResultText').textContent = `יצא ${results[0]} + ${results[1]}`;
+        document.getElementById('sumBadgeWrap').innerHTML =
+          `<span class="sum-badge">= ${sum}</span>`;
+
+        // Highlight grid cell
+        document.querySelectorAll('.og-cell.highlighted').forEach(c => c.classList.remove('highlighted'));
+        const cell = document.getElementById(`og-${results[0]}-${results[1]}`);
+        if (cell) cell.classList.add('highlighted');
+      }
+
+      updateFreqBars();
+      isRolling = false;
+      document.getElementById('btnRoll').disabled = false;
+    }, 950);
+  }
+
+  /* ── CHALLENGE ── */
+  function loadQuestion(idx) {
+    const q = QUESTIONS[idx];
+    document.getElementById('qProgress').textContent = `שאלה ${idx + 1} מתוך ${QUESTIONS.length}`;
+    document.getElementById('challengeQuestion').textContent = q.q;
+    document.getElementById('qFeedback').textContent = '';
+    document.getElementById('qFeedback').className = 'q-feedback';
+
+    const grid = document.getElementById('optionsGrid');
+    grid.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.onclick = () => answerQ(i, btn, q);
+      grid.appendChild(btn);
+    });
+  }
+
+  function answerQ(chosen, btn, q) {
+    if (challengeDone) return;
+    const grid = document.getElementById('optionsGrid');
+    grid.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+    const feedback = document.getElementById('qFeedback');
+    if (chosen === q.correct) {
+      btn.classList.add('correct');
+      correctCount++;
+      feedback.textContent = '✅ ' + q.explain;
+      feedback.className = 'q-feedback correct';
+      ProbabilityUtils.playSound('correct');
+    } else {
+      btn.classList.add('wrong');
+      grid.querySelectorAll('.option-btn')[q.correct].classList.add('correct');
+      feedback.textContent = '❌ ' + q.explain;
+      feedback.className = 'q-feedback wrong';
+      ProbabilityUtils.playSound('wrong');
+    }
+
+    setTimeout(() => {
+      currentQ++;
+      if (currentQ < QUESTIONS.length) {
+        loadQuestion(currentQ);
+      } else {
+        showChallengeResult();
+      }
+    }, 1800);
+  }
+
+  function showChallengeResult() {
+    challengeDone = true;
+    const scoreEl = document.getElementById('challengeScore');
+    scoreEl.classList.add('show');
+
+    let stars;
+    if (correctCount === 3) { stars = 3; }
+    else if (correctCount === 2) { stars = 2; }
+    else { stars = 1; }
+    earnedStars = stars;
+
+    const starsStr = '⭐'.repeat(stars);
+    scoreEl.textContent = `${starsStr} ענית נכון על ${correctCount}/3! קיבלת ${stars} כוכבים!`;
+
+    if (stars === 3) {
+      ProbabilityUtils.playSound('complete');
+      ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 60);
+    }
+
+    document.getElementById('optionsGrid').innerHTML = '';
+    document.getElementById('challengeQuestion').textContent = '';
+    document.getElementById('qProgress').textContent = 'האתגר הסתיים!';
+    document.getElementById('qFeedback').textContent = '';
+  }
+
+  function finishModule() {
+    const stars = earnedStars || (totalRolls > 0 ? 1 : 0);
+    const xp = stars * 30 + totalRolls * 2;
+    localStorage.setItem('prob-module-2', JSON.stringify({ stars, completed: true, xp }));
+    if (window.ProbabilityApp?.completeModule) window.ProbabilityApp.completeModule('02-dice', stars);
+    const starsStr = '⭐'.repeat(stars);
+    ProbabilityUtils.showToast(`${starsStr} קיבלת ${stars} כוכבים! +${xp} XP`, 'success', 3500);
+    ProbabilityUtils.playSound('complete');
+    ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 80);
+    setTimeout(() => { window.location.href = '../index.html'; }, 3500);
+  }
+
+  /* ── INIT ── */
+  setMode(1);
+  loadQuestion(0);
+</script>
+</body>
+</html>

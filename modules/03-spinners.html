@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="גלגל המזל — למד הסתברות עם גלגל מזל אינטראקטיבי לילדים בגילאי 10-12" />
+  <title>גלגל המזל 🎡 — עולם ההסתברות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <style>
+    .module-main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+    .teaching-box {
+      background: linear-gradient(135deg, #d8fef0, #a8f5da);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .teaching-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .teaching-text { font-size: 0.95rem; line-height: 1.6; font-weight: 500; }
+
+    /* ── WHEEL STAGE ── */
+    .wheel-stage {
+      background: linear-gradient(145deg, #ece0ff, #d4b8ff);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 1.5rem 1rem 2rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .wheel-area {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas#spinWheel {
+      border-radius: 50%;
+      border: 4px solid var(--color-dark);
+      box-shadow: 6px 6px 0 var(--color-dark);
+      cursor: pointer;
+      transition: filter 0.3s;
+    }
+    canvas#spinWheel.spinning { cursor: not-allowed; filter: brightness(0.95); }
+
+    /* Pointer/arrow at top */
+    .wheel-pointer {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 16px solid transparent;
+      border-right: 16px solid transparent;
+      border-top: 32px solid #1A1A2E;
+      filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.3));
+      z-index: 10;
+    }
+
+    .wheel-result {
+      font-size: 1.5rem;
+      font-weight: 900;
+      min-height: 2rem;
+      text-align: center;
+    }
+
+    .btn-spin {
+      background: var(--color-accent-2);
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 900;
+      padding: 0.8rem 2.5rem;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-spin:hover { transform: translateY(-3px); box-shadow: var(--shadow-fun-hover); }
+    .btn-spin:active { transform: translateY(2px); box-shadow: 1px 1px 0 var(--color-dark); }
+    .btn-spin:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── PROBABILITY DISPLAY ── */
+    .prob-section {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .prob-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.75rem; text-align: center; }
+    .prob-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .prob-chip {
+      border: 2px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      padding: 0.4rem 0.9rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+    .spin-stats { text-align: center; font-size: 0.85rem; color: #666; font-weight: 700; }
+
+    /* ── CUSTOMIZATION ── */
+    .custom-section {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .custom-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.75rem; }
+    .custom-rows { display: flex; flex-direction: column; gap: 0.65rem; }
+    .custom-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .section-color-block {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid var(--color-dark);
+      flex-shrink: 0;
+    }
+    .section-name { font-weight: 700; font-size: 0.9rem; flex: 1; min-width: 60px; }
+    .size-label { font-size: 0.85rem; color: #555; font-weight: 700; min-width: 40px; text-align: center; }
+    .btn-size {
+      background: white;
+      border: 2px solid var(--color-dark);
+      border-radius: var(--radius-sm);
+      width: 32px;
+      height: 32px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 var(--color-dark);
+      transition: transform 0.1s;
+      font-family: var(--font-main);
+    }
+    .btn-size:hover { transform: scale(1.12); }
+
+    /* ── CHALLENGE ── */
+    .challenge-section {
+      background: linear-gradient(145deg, #fff8d6, #ffe8a0);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 1.5rem 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .challenge-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem; }
+    .challenge-desc { font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; }
+    .challenge-status {
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-align: center;
+      padding: 0.75rem;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--color-dark);
+      background: white;
+      margin-bottom: 0.75rem;
+    }
+    .challenge-status.perfect { background: #06D6A0; color: var(--color-dark); }
+    .challenge-status.close   { background: #FFD166; color: var(--color-dark); }
+    .challenge-status.off     { background: #EF476F; color: white; }
+
+    .btn-check {
+      display: block;
+      margin: 0.75rem auto 0;
+      background: var(--color-primary);
+      color: white;
+      font-size: 1rem;
+      font-weight: 900;
+      padding: 0.65rem 1.8rem;
+      border-radius: var(--radius-md);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      font-family: var(--font-main);
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .btn-check:hover { transform: translateY(-2px); box-shadow: var(--shadow-fun-hover); }
+
+    .finish-section { text-align: center; padding: 1rem 0; }
+    .btn-finish {
+      background: linear-gradient(135deg, #FFD166, #FF6B35);
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 900;
+      padding: 1rem 2.5rem;
+      border-radius: var(--radius-xl);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-finish:hover { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-fun-hover); }
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 900; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<header class="module-header">
+  <div class="module-header-inner">
+    <a href="../index.html" class="back-btn">← חזרה לבית</a>
+    <span style="font-size:1.2rem;font-weight:900;color:white;text-shadow:2px 2px 0 rgba(0,0,0,0.3);">עולם ההסתברות</span>
+    <span style="font-size:1.5rem;">🎡</span>
+  </div>
+</header>
+
+<main class="module-main">
+
+  <div class="teaching-box">
+    <span class="teaching-icon">💡</span>
+    <p class="teaching-text">
+      בגלגל מזל, הסיכוי לכל צבע הוא <strong>שטח הצבע חלקי שטח הגלגל כולו</strong>.
+      אם מחצית הגלגל אדום, הסיכוי לאדום = <strong>1/2 = 50%</strong>. ניתן לשנות את גדלי החלקים ולראות כיצד משתנים הסיכויים!
+    </p>
+  </div>
+
+  <!-- Wheel stage -->
+  <div class="wheel-stage">
+    <div class="wheel-area">
+      <div class="wheel-pointer"></div>
+      <canvas id="spinWheel" width="320" height="320"></canvas>
+    </div>
+    <div class="wheel-result" id="wheelResult">לחץ על הגלגל או "סובב!" כדי להתחיל</div>
+    <button class="btn-spin" id="btnSpin" onclick="spinWheel()">🎡 סובב!</button>
+  </div>
+
+  <!-- Probability display -->
+  <div class="prob-section">
+    <div class="prob-title">📊 הסתברות לכל צבע</div>
+    <div class="prob-chips" id="probChips"></div>
+    <div class="spin-stats" id="spinStats">לא הוטל עדיין</div>
+  </div>
+
+  <!-- Customization -->
+  <div class="custom-section">
+    <div class="custom-title">🎨 שנה את גדלי החלקים</div>
+    <div class="custom-rows" id="customRows"></div>
+  </div>
+
+  <!-- Challenge -->
+  <div class="challenge-section">
+    <div class="challenge-title">🎯 אתגר: P(אדום) = 50%!</div>
+    <div class="challenge-desc">
+      כוון את הגלגל כך שהסיכוי לאדום יהיה בדיוק <strong>50%</strong> (מחצית הגלגל אדום).
+      השתמש בכפתורים + ו- בשורה האדומה לכוונון!
+    </div>
+    <div class="challenge-status" id="challengeStatus">P(אדום) כרגע = ?%</div>
+    <button class="btn-check" onclick="checkChallenge()">✅ בדוק!</button>
+  </div>
+
+  <div class="finish-section">
+    <button class="btn-finish" onclick="finishModule()">⭐ סיים וקבל כוכבים!</button>
+  </div>
+
+</main>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script src="../js/utils.js"></script>
+<script>
+  /* ── WHEEL CONFIG ── */
+  const SECTIONS = [
+    { name: 'אדום',  color: '#EF476F', size: 3 },
+    { name: 'כחול',  color: '#4ECDC4', size: 3 },
+    { name: 'צהוב',  color: '#FFD166', size: 3 },
+    { name: 'ירוק',  color: '#06D6A0', size: 3 },
+  ];
+
+  let currentAngle = 0;
+  let isSpinning = false;
+  let spinCounts = {};  // name -> count
+  let totalSpins = 0;
+  let earnedStars = 0;
+  let challengeAttempts = 0;
+
+  SECTIONS.forEach(s => spinCounts[s.name] = 0);
+
+  /* ── CANVAS DRAW ── */
+  const canvas = document.getElementById('spinWheel');
+  const ctx = canvas.getContext('2d');
+  const CX = canvas.width / 2, CY = canvas.height / 2, R = canvas.width / 2 - 4;
+
+  function totalSize() { return SECTIONS.reduce((a, s) => a + s.size, 0); }
+
+  function drawWheel(angle = 0) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const total = totalSize();
+    let start = angle;
+
+    SECTIONS.forEach(s => {
+      const sweep = (s.size / total) * Math.PI * 2;
+      // Section fill
+      ctx.beginPath();
+      ctx.moveTo(CX, CY);
+      ctx.arc(CX, CY, R, start, start + sweep);
+      ctx.closePath();
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      ctx.strokeStyle = '#1A1A2E';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Label
+      const midAngle = start + sweep / 2;
+      const lx = CX + Math.cos(midAngle) * R * 0.68;
+      const ly = CY + Math.sin(midAngle) * R * 0.68;
+      ctx.save();
+      ctx.translate(lx, ly);
+      ctx.rotate(midAngle + Math.PI / 2);
+      ctx.fillStyle = '#1A1A2E';
+      ctx.font = 'bold 15px Heebo, Arial Hebrew, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      // show percent if big enough
+      const pct = Math.round((s.size / total) * 100);
+      ctx.fillText(s.name, 0, -8);
+      ctx.font = '12px Heebo, Arial Hebrew, sans-serif';
+      ctx.fillText(`${pct}%`, 0, 8);
+      ctx.restore();
+
+      start += sweep;
+    });
+
+    // Center circle
+    ctx.beginPath();
+    ctx.arc(CX, CY, 16, 0, Math.PI * 2);
+    ctx.fillStyle = '#1A1A2E';
+    ctx.fill();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  /* ── SPIN ANIMATION ── */
+  function spinWheel() {
+    if (isSpinning) return;
+    isSpinning = true;
+    document.getElementById('btnSpin').disabled = true;
+    canvas.classList.add('spinning');
+    ProbabilityUtils.playSound('flip');
+
+    // Weighted random result
+    const total = totalSize();
+    let rand = Math.random() * total;
+    let resultSection = SECTIONS[0];
+    let cumulative = 0;
+    for (const s of SECTIONS) {
+      cumulative += s.size;
+      if (rand <= cumulative) { resultSection = s; break; }
+    }
+
+    // Calculate spin amount to land on result section
+    const totalAngle = totalSize();
+    let sectionStartFrac = 0;
+    for (const s of SECTIONS) {
+      if (s === resultSection) break;
+      sectionStartFrac += s.size / totalAngle;
+    }
+    const sectionMidFrac = sectionStartFrac + (resultSection.size / totalAngle) / 2;
+
+    // We want the section midpoint to be at top (- Math.PI/2)
+    const targetAngle = -Math.PI / 2 - sectionMidFrac * Math.PI * 2;
+    const spins = 5 + Math.random() * 4;
+    const finalAngle = targetAngle - spins * Math.PI * 2;
+
+    const duration = 3500;
+    const startTime = performance.now();
+    const startAngle = currentAngle;
+
+    function ease(t) {
+      // Ease out cubic
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function animFrame(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      currentAngle = startAngle + (finalAngle - startAngle) * ease(t);
+      drawWheel(currentAngle);
+
+      if (t < 1) {
+        requestAnimationFrame(animFrame);
+      } else {
+        currentAngle = finalAngle;
+        isSpinning = false;
+        canvas.classList.remove('spinning');
+        document.getElementById('btnSpin').disabled = false;
+
+        totalSpins++;
+        spinCounts[resultSection.name]++;
+        updateStats();
+
+        const resEl = document.getElementById('wheelResult');
+        resEl.textContent = `🎉 נפל על: ${resultSection.name}!`;
+        resEl.style.color = resultSection.color;
+        ProbabilityUtils.playSound('correct');
+        ProbabilityUtils.flashClass(resEl, 'anim-bounce-in', 600);
+      }
+    }
+    requestAnimationFrame(animFrame);
+  }
+
+  /* make canvas clickable to spin */
+  canvas.addEventListener('click', () => { if (!isSpinning) spinWheel(); });
+
+  /* ── PROB CHIPS ── */
+  function updateProbChips() {
+    const total = totalSize();
+    const chips = document.getElementById('probChips');
+    chips.innerHTML = '';
+
+    SECTIONS.forEach(s => {
+      const pct = Math.round((s.size / total) * 100);
+      const frac = ProbabilityUtils.formatFraction(s.size, total);
+      const chip = document.createElement('div');
+      chip.className = 'prob-chip';
+      chip.style.background = s.color + '33';
+      chip.innerHTML = `<span class="color-dot" style="background:${s.color}"></span>
+        P(${s.name}) = ${frac} = ${pct}%`;
+      chips.appendChild(chip);
+    });
+
+    // update challenge status
+    const redSection = SECTIONS.find(s => s.name === 'אדום');
+    if (redSection) {
+      const redPct = Math.round((redSection.size / total) * 100);
+      const statusEl = document.getElementById('challengeStatus');
+      statusEl.textContent = `P(אדום) כרגע = ${redPct}%`;
+      statusEl.className = 'challenge-status';
+    }
+  }
+
+  function updateStats() {
+    const statsEl = document.getElementById('spinStats');
+    if (totalSpins === 0) { statsEl.textContent = 'לא הוטל עדיין'; return; }
+    const parts = SECTIONS.map(s => `${s.name}: ${spinCounts[s.name]}`);
+    statsEl.textContent = `סה"כ ${totalSpins} סיבובים | ${parts.join(' | ')}`;
+  }
+
+  /* ── CUSTOMIZATION ── */
+  function buildCustomRows() {
+    const rows = document.getElementById('customRows');
+    rows.innerHTML = '';
+    SECTIONS.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 'custom-row';
+
+      const block = document.createElement('div');
+      block.className = 'section-color-block';
+      block.style.background = s.color;
+
+      const name = document.createElement('div');
+      name.className = 'section-name';
+      name.textContent = s.name;
+
+      const btnMinus = document.createElement('button');
+      btnMinus.className = 'btn-size';
+      btnMinus.textContent = '−';
+      btnMinus.onclick = () => changeSize(i, -1);
+
+      const sizeLabel = document.createElement('div');
+      sizeLabel.className = 'size-label';
+      sizeLabel.id = `size-${i}`;
+      sizeLabel.textContent = `${s.size} חלקים`;
+
+      const btnPlus = document.createElement('button');
+      btnPlus.className = 'btn-size';
+      btnPlus.textContent = '+';
+      btnPlus.onclick = () => changeSize(i, 1);
+
+      row.appendChild(block);
+      row.appendChild(name);
+      row.appendChild(btnMinus);
+      row.appendChild(sizeLabel);
+      row.appendChild(btnPlus);
+      rows.appendChild(row);
+    });
+  }
+
+  function changeSize(idx, delta) {
+    if (isSpinning) return;
+    SECTIONS[idx].size = Math.max(1, Math.min(12, SECTIONS[idx].size + delta));
+    document.getElementById(`size-${idx}`).textContent = `${SECTIONS[idx].size} חלקים`;
+    drawWheel(currentAngle);
+    updateProbChips();
+    ProbabilityUtils.playSound('tick');
+  }
+
+  /* ── CHALLENGE CHECK ── */
+  function checkChallenge() {
+    challengeAttempts++;
+    const total = totalSize();
+    const redSection = SECTIONS.find(s => s.name === 'אדום');
+    const redPct = (redSection.size / total) * 100;
+    const diff = Math.abs(redPct - 50);
+
+    const statusEl = document.getElementById('challengeStatus');
+    let stars, msg;
+
+    if (diff < 1) {
+      stars = 3;
+      msg = '🌟🌟🌟 מושלם! P(אדום) = 50% בדיוק! אלוף!';
+      statusEl.className = 'challenge-status perfect';
+      ProbabilityUtils.playSound('complete');
+      ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 70);
+    } else if (diff <= 10) {
+      stars = 2;
+      msg = `⭐⭐ קרוב מאוד! P(אדום) = ${Math.round(redPct)}%. נסה להגיע ל-50%!`;
+      statusEl.className = 'challenge-status close';
+      ProbabilityUtils.playSound('correct');
+    } else {
+      stars = 1;
+      msg = `⭐ P(אדום) = ${Math.round(redPct)}%. המשך לנסות — אתה צריך להגיע ל-50%!`;
+      statusEl.className = 'challenge-status off';
+      ProbabilityUtils.playSound('wrong');
+    }
+    statusEl.textContent = msg;
+    earnedStars = Math.max(earnedStars, stars);
+  }
+
+  /* ── FINISH ── */
+  function finishModule() {
+    const stars = earnedStars || (totalSpins > 0 ? 1 : 0);
+    const xp = stars * 30 + totalSpins * 3;
+    localStorage.setItem('prob-module-3', JSON.stringify({ stars, completed: true, xp }));
+    if (window.ProbabilityApp?.completeModule) window.ProbabilityApp.completeModule('03-spinners', stars);
+    const starsStr = '⭐'.repeat(stars);
+    ProbabilityUtils.showToast(`${starsStr} קיבלת ${stars} כוכבים! +${xp} XP`, 'success', 3500);
+    ProbabilityUtils.playSound('complete');
+    ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 80);
+    setTimeout(() => { window.location.href = '../index.html'; }, 3500);
+  }
+
+  /* ── INIT ── */
+  drawWheel(currentAngle);
+  buildCustomRows();
+  updateProbChips();
+</script>
+</body>
+</html>

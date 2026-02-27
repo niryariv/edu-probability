@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="קלפים וסיכויים — למד הסתברות עם חפיסת קלפים אינטראקטיבית לילדים בגילאי 10-12" />
+  <title>קלפים וסיכויים ♠️ — עולם ההסתברות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <style>
+    .module-main { max-width: 900px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+    .teaching-box {
+      background: linear-gradient(135deg, #d8f5f5, #a0e8e8);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .teaching-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .teaching-text { font-size: 0.95rem; line-height: 1.6; font-weight: 500; }
+
+    /* ── CARD DRAW AREA ── */
+    .draw-stage {
+      background: linear-gradient(145deg, #1a6b3a, #2a8a4e);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 1.5rem 1rem 2rem;
+      margin-bottom: 1.75rem;
+      text-align: center;
+    }
+
+    /* Replace mode toggle */
+    .mode-row {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+    .mode-label { color: white; font-weight: 700; font-size: 0.9rem; }
+    .toggle-switch {
+      display: flex;
+      background: rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 30px;
+      overflow: hidden;
+    }
+    .toggle-opt {
+      padding: 0.3rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-family: var(--font-main);
+      border: none;
+      background: none;
+    }
+    .toggle-opt.active { background: white; color: var(--color-dark); border-radius: 28px; }
+
+    /* Large drawn card display */
+    .drawn-card-area {
+      perspective: 600px;
+      margin: 0 auto 1.25rem;
+      width: 100px;
+      height: 140px;
+    }
+    .drawn-card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    }
+    .drawn-card-inner.flipped { transform: rotateY(180deg); }
+
+    .card-face-front, .card-face-back {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      border: 3px solid var(--color-dark);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-face-back {
+      background: linear-gradient(135deg, #1a3a8f, #2a5abf);
+      background-image: repeating-linear-gradient(
+        45deg, transparent, transparent 5px,
+        rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 10px
+      );
+    }
+    .card-face-back::after {
+      content: '🂠';
+      font-size: 3rem;
+      filter: grayscale(1) opacity(0.5);
+    }
+    .card-face-front {
+      background: white;
+      flex-direction: column;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.08);
+      transform: rotateY(180deg);
+    }
+    .big-suit { font-size: 2.8rem; line-height: 1; }
+    .big-value { font-size: 1.4rem; font-weight: 900; }
+    .card-face-front.red-card { color: #c0392b; }
+    .card-face-front.black-card { color: #1A1A2E; }
+
+    .btn-draw {
+      background: var(--color-accent-1);
+      color: var(--color-dark);
+      font-size: 1.1rem;
+      font-weight: 900;
+      padding: 0.75rem 2rem;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+      margin-bottom: 0.75rem;
+    }
+    .btn-draw:hover { transform: translateY(-2px); box-shadow: var(--shadow-fun-hover); }
+    .btn-draw:active { transform: translateY(2px); box-shadow: 1px 1px 0 var(--color-dark); }
+    .btn-draw:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-reset-deck {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(255,255,255,0.5);
+      cursor: pointer;
+      font-family: var(--font-main);
+      transition: background 0.15s;
+    }
+    .btn-reset-deck:hover { background: rgba(255,255,255,0.35); }
+
+    .deck-status { color: rgba(255,255,255,0.8); font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem; }
+
+    /* ── MINI DECK GRID ── */
+    .deck-grid-section {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .deck-grid-title { font-size: 1rem; font-weight: 900; margin-bottom: 0.75rem; }
+    .deck-grid {
+      display: grid;
+      grid-template-columns: repeat(13, 1fr);
+      gap: 3px;
+      margin-bottom: 0.75rem;
+    }
+    .mini-card {
+      aspect-ratio: 2/3;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      font-size: 0.55rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      cursor: default;
+      transition: opacity 0.3s, filter 0.3s;
+      line-height: 1.1;
+      font-weight: 700;
+    }
+    .mini-card.red { color: #c0392b; }
+    .mini-card.black { color: #1A1A2E; }
+    .mini-card.drawn { opacity: 0.2; filter: grayscale(1); }
+    .mini-card.just-drawn { animation: bounceIn 0.4s both; box-shadow: 0 0 0 2px var(--color-accent-4); }
+
+    /* ── STATISTICS ── */
+    .stats-section {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .stats-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.75rem; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .stat-chip {
+      background: #f5f5f5;
+      border: 2px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .stat-label { color: #666; font-size: 0.75rem; }
+    .stat-value { font-size: 1rem; font-weight: 900; }
+
+    .prob-facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .prob-fact {
+      background: linear-gradient(135deg, #e8f4fd, #cce5ff);
+      border: 2px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* ── CHALLENGE ── */
+    .challenge-section {
+      background: linear-gradient(145deg, #ece0ff, #d4b8ff);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 1.5rem 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .challenge-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem; }
+    .q-progress { font-size: 0.85rem; font-weight: 700; color: #555; margin-bottom: 0.5rem; }
+    .challenge-q { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.5; }
+    .options-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .opt-btn {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      box-shadow: 3px 3px 0 var(--color-dark);
+      padding: 0.6rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: right;
+      transition: transform 0.12s, background 0.12s;
+      font-family: var(--font-main);
+    }
+    .opt-btn:hover { transform: translateX(-3px); }
+    .opt-btn.correct { background: #06D6A0; animation: bounceIn 0.4s both; }
+    .opt-btn.wrong   { background: #EF476F; color: white; animation: shake 0.4s both; }
+    .opt-btn:disabled { cursor: default; }
+    .q-feedback { font-size: 0.9rem; font-weight: 700; min-height: 1.4rem; margin-bottom: 0.5rem; }
+    .q-feedback.correct { color: #06D6A0; }
+    .q-feedback.wrong   { color: #EF476F; }
+    .challenge-final { font-size: 1.2rem; font-weight: 900; text-align: center; display: none; }
+    .challenge-final.show { display: block; }
+
+    .finish-section { text-align: center; padding: 1rem 0; }
+    .btn-finish {
+      background: linear-gradient(135deg, #FFD166, #FF6B35);
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 900;
+      padding: 1rem 2.5rem;
+      border-radius: var(--radius-xl);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-finish:hover { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-fun-hover); }
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 900; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<header class="module-header">
+  <div class="module-header-inner">
+    <a href="../index.html" class="back-btn">← חזרה לבית</a>
+    <span style="font-size:1.2rem;font-weight:900;color:white;text-shadow:2px 2px 0 rgba(0,0,0,0.3);">עולם ההסתברות</span>
+    <span style="font-size:1.5rem;">♠️</span>
+  </div>
+</header>
+
+<main class="module-main">
+
+  <div class="teaching-box">
+    <span class="teaching-icon">💡</span>
+    <p class="teaching-text">
+      בחפיסת קלפים רגילה יש <strong>52 קלפים</strong>: 4 צבאים (♠♥♦♣), כל צבא עם 13 קלפים (A, 2-10, J, Q, K).
+      הסיכוי לשלוף כרטיס ספציפי = <strong>1/52</strong>. הסיכוי לאס = <strong>4/52 = 1/13</strong>!
+    </p>
+  </div>
+
+  <!-- Draw stage -->
+  <div class="draw-stage">
+    <div class="mode-row">
+      <span class="mode-label">שיטת שליפה:</span>
+      <div class="toggle-switch">
+        <button class="toggle-opt active" id="modeWith" onclick="setReplaceMode(true)">עם החזרה</button>
+        <button class="toggle-opt" id="modeWithout" onclick="setReplaceMode(false)">ללא החזרה</button>
+      </div>
+    </div>
+
+    <div class="drawn-card-area">
+      <div class="drawn-card-inner" id="drawnCardInner">
+        <div class="card-face-back"></div>
+        <div class="card-face-front" id="drawnCardFront">
+          <span class="big-suit" id="bigSuit">?</span>
+          <span class="big-value" id="bigValue"></span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-draw" id="btnDraw" onclick="drawCard()">🃏 שלוף קלף!</button>
+    <br>
+    <button class="btn-reset-deck" onclick="resetDeck()">↺ ערבב מחדש</button>
+    <div class="deck-status" id="deckStatus">52 קלפים בחפיסה</div>
+  </div>
+
+  <!-- Mini deck grid -->
+  <div class="deck-grid-section">
+    <div class="deck-grid-title">🗂️ כל קלפי החפיסה (52 קלפים)</div>
+    <div class="deck-grid" id="deckGrid"></div>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-section">
+    <div class="stats-title">📊 סטטיסטיקה חיה</div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="prob-facts" id="probFacts"></div>
+  </div>
+
+  <!-- Challenge -->
+  <div class="challenge-section">
+    <div class="challenge-title">🎯 אתגר: שאלות על קלפים!</div>
+    <div class="q-progress" id="qProgress">שאלה 1 מתוך 5</div>
+    <div class="challenge-q" id="challengeQ">טוען...</div>
+    <div class="options-list" id="optionsList"></div>
+    <div class="q-feedback" id="qFeedback"></div>
+    <div class="challenge-final" id="challengeFinal"></div>
+  </div>
+
+  <div class="finish-section">
+    <button class="btn-finish" onclick="finishModule()">⭐ סיים וקבל כוכבים!</button>
+  </div>
+
+</main>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script src="../js/utils.js"></script>
+<script>
+  /* ── DECK SETUP ── */
+  const SUITS = ['♠', '♣', '♥', '♦'];
+  const SUIT_NAMES = { '♠': 'שחור', '♣': 'שחור', '♥': 'אדום', '♦': 'אדום' };
+  const VALUES = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const VALUE_NAMES = { 'A': 'אס', 'J': 'נסיך', 'Q': 'מלכה', 'K': 'מלך' };
+  const FACE_CARDS = new Set(['J','Q','K']);
+
+  function buildDeck() {
+    const deck = [];
+    for (const suit of SUITS) {
+      for (const val of VALUES) {
+        deck.push({ suit, val, id: `${suit}-${val}` });
+      }
+    }
+    return deck;
+  }
+
+  let fullDeck = buildDeck();
+  let remainingDeck = [...fullDeck];
+  let drawnCards = [];
+  let withReplacement = true;
+  let isDrawing = false;
+  let earnedStars = 0;
+
+  // Stats
+  let suitCounts = { '♠':0, '♣':0, '♥':0, '♦':0 };
+  let redCount = 0, blackCount = 0, aceCount = 0, faceCount = 0;
+  let totalDrawn = 0;
+
+  /* ── MODE ── */
+  function setReplaceMode(val) {
+    withReplacement = val;
+    document.getElementById('modeWith').classList.toggle('active', val);
+    document.getElementById('modeWithout').classList.toggle('active', !val);
+    if (!val) { resetDeck(); }
+  }
+
+  function resetDeck() {
+    remainingDeck = [...fullDeck];
+    ProbabilityUtils.shuffle(remainingDeck);
+    drawnCards = [];
+    suitCounts = { '♠':0, '♣':0, '♥':0, '♦':0 };
+    redCount = 0; blackCount = 0; aceCount = 0; faceCount = 0;
+    totalDrawn = 0;
+
+    document.getElementById('drawnCardInner').classList.remove('flipped');
+    document.getElementById('bigSuit').textContent = '?';
+    document.getElementById('bigValue').textContent = '';
+    document.querySelectorAll('.mini-card').forEach(el => {
+      el.classList.remove('drawn', 'just-drawn');
+    });
+    updateDeckStatus();
+    updateStats();
+    ProbabilityUtils.playSound('flip');
+  }
+
+  /* ── DECK GRID ── */
+  function buildDeckGrid() {
+    const grid = document.getElementById('deckGrid');
+    grid.innerHTML = '';
+    for (const suit of SUITS) {
+      for (const val of VALUES) {
+        const card = document.createElement('div');
+        const isRed = suit === '♥' || suit === '♦';
+        card.className = `mini-card ${isRed ? 'red' : 'black'}`;
+        card.id = `mini-${suit}-${val}`;
+        card.innerHTML = `<span>${val}</span><span>${suit}</span>`;
+        card.title = `${val} ${suit}`;
+        grid.appendChild(card);
+      }
+    }
+  }
+
+  /* ── DRAW CARD ── */
+  function drawCard() {
+    if (isDrawing) return;
+    if (!withReplacement && remainingDeck.length === 0) {
+      ProbabilityUtils.showToast('החפיסה ריקה! ערבב מחדש.', 'error');
+      return;
+    }
+    isDrawing = true;
+    document.getElementById('btnDraw').disabled = true;
+    ProbabilityUtils.playSound('flip');
+
+    // Flip back first
+    const inner = document.getElementById('drawnCardInner');
+    inner.classList.remove('flipped');
+
+    setTimeout(() => {
+      let card;
+      if (withReplacement) {
+        card = ProbabilityUtils.randomChoice(fullDeck);
+      } else {
+        card = remainingDeck.pop();
+        drawnCards.push(card);
+      }
+
+      // Update stats
+      suitCounts[card.suit]++;
+      const isRed = card.suit === '♥' || card.suit === '♦';
+      if (isRed) redCount++; else blackCount++;
+      if (card.val === 'A') aceCount++;
+      if (FACE_CARDS.has(card.val)) faceCount++;
+      totalDrawn++;
+
+      // Show card
+      const front = document.getElementById('drawnCardFront');
+      front.className = `card-face-front ${isRed ? 'red-card' : 'black-card'}`;
+      document.getElementById('bigSuit').textContent = card.suit;
+      document.getElementById('bigValue').textContent = card.val;
+
+      // Flip to show
+      inner.classList.add('flipped');
+
+      // Mark in grid
+      if (!withReplacement) {
+        const miniCard = document.getElementById(`mini-${card.suit}-${card.val}`);
+        if (miniCard) {
+          miniCard.classList.add('drawn');
+        }
+      } else {
+        // Briefly highlight
+        const miniCard = document.getElementById(`mini-${card.suit}-${card.val}`);
+        if (miniCard) {
+          miniCard.classList.add('just-drawn');
+          setTimeout(() => miniCard.classList.remove('just-drawn'), 1200);
+        }
+      }
+
+      updateDeckStatus();
+      updateStats();
+
+      setTimeout(() => {
+        isDrawing = false;
+        document.getElementById('btnDraw').disabled = false;
+      }, 700);
+    }, 300);
+  }
+
+  function updateDeckStatus() {
+    const remaining = withReplacement ? 52 : remainingDeck.length;
+    document.getElementById('deckStatus').textContent =
+      withReplacement
+        ? `שיטה: עם החזרה (52 קלפים תמיד)`
+        : `נותרו ${remaining} מתוך 52 קלפים`;
+  }
+
+  function updateStats() {
+    const grid = document.getElementById('statsGrid');
+    grid.innerHTML = '';
+
+    const items = [
+      { label: '♠ ספייד', value: `${suitCounts['♠']} קלפים` },
+      { label: '♣ קלאבס', value: `${suitCounts['♣']} קלפים` },
+      { label: '♥ הארטס', value: `${suitCounts['♥']} קלפים` },
+      { label: '♦ דיאמונד', value: `${suitCounts['♦']} קלפים` },
+      { label: 'אדומים', value: redCount },
+      { label: 'שחורים', value: blackCount },
+      { label: 'אסים', value: aceCount },
+      { label: 'תמונות (J,Q,K)', value: faceCount },
+    ];
+
+    items.forEach(item => {
+      const chip = document.createElement('div');
+      chip.className = 'stat-chip';
+      chip.innerHTML = `<div class="stat-label">${item.label}</div><div class="stat-value">${item.value}</div>`;
+      grid.appendChild(chip);
+    });
+
+    // Probability facts
+    const facts = document.getElementById('probFacts');
+    facts.innerHTML = '';
+    const pool = withReplacement ? 52 : (52 - totalDrawn || 52);
+    const factList = [
+      `P(אס) = ${ProbabilityUtils.formatFraction(4, 52)} = ${ProbabilityUtils.formatPercent(4, 52)}`,
+      `P(אדום) = ${ProbabilityUtils.formatFraction(26, 52)} = 50%`,
+      `P(תמונה) = ${ProbabilityUtils.formatFraction(12, 52)} = ${ProbabilityUtils.formatPercent(12, 52)}`,
+      `P(♠) = ${ProbabilityUtils.formatFraction(13, 52)} = 25%`,
+    ];
+    factList.forEach(f => {
+      const chip = document.createElement('div');
+      chip.className = 'prob-fact';
+      chip.textContent = f;
+      facts.appendChild(chip);
+    });
+  }
+
+  /* ── CHALLENGE QUESTIONS ── */
+  const QUESTIONS = [
+    {
+      q: 'מה הסיכוי לשלוף אס מחפיסה שלמה?',
+      opts: ['1/52', '4/52 = 1/13', '13/52 = 1/4', '1/4'],
+      correct: 1,
+      exp: '✅ נכון! יש 4 אסים מתוך 52 קלפים: P(אס) = 4/52 = 1/13 ≈ 7.7%'
+    },
+    {
+      q: 'מה הסיכוי לשלוף קלף אדום (♥ או ♦)?',
+      opts: ['1/4', '1/2', '1/3', '2/3'],
+      correct: 1,
+      exp: '✅ נכון! 26 קלפים אדומים מתוך 52: P(אדום) = 26/52 = 1/2 = 50%'
+    },
+    {
+      q: 'מה הסיכוי לשלוף קלף מצולם (J, Q, K)?',
+      opts: ['3/52', '12/52 = 3/13', '4/52', '6/52'],
+      correct: 1,
+      exp: '✅ נכון! 4 צבאות × 3 קלפי תמונה = 12 קלפים: P(תמונה) = 12/52 = 3/13 ≈ 23%'
+    },
+    {
+      q: 'כמה קלפים יש בכל צבא (♠, ♣, ♥, ♦)?',
+      opts: ['10 קלפים', '12 קלפים', '13 קלפים', '14 קלפים'],
+      correct: 2,
+      exp: '✅ נכון! A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K — 13 קלפים בכל צבא!'
+    },
+    {
+      q: 'מה הסיכוי לשלוף 10 מחפיסה מלאה?',
+      opts: ['1/52', '4/52 = 1/13', '10/52', '2/52'],
+      correct: 1,
+      exp: '✅ נכון! יש 4 קלפים בערך 10 (אחד לכל צבא): P(10) = 4/52 = 1/13'
+    }
+  ];
+
+  let currentQ = 0, correctCount = 0, challengeDone = false;
+
+  function loadQ(idx) {
+    if (idx >= QUESTIONS.length) { showFinal(); return; }
+    const q = QUESTIONS[idx];
+    document.getElementById('qProgress').textContent = `שאלה ${idx + 1} מתוך ${QUESTIONS.length}`;
+    document.getElementById('challengeQ').textContent = q.q;
+    document.getElementById('qFeedback').textContent = '';
+    document.getElementById('qFeedback').className = 'q-feedback';
+
+    const list = document.getElementById('optionsList');
+    list.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.textContent = opt;
+      btn.onclick = () => answerQ(i, btn, q);
+      list.appendChild(btn);
+    });
+  }
+
+  function answerQ(chosen, btn, q) {
+    document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+    const fb = document.getElementById('qFeedback');
+    if (chosen === q.correct) {
+      btn.classList.add('correct');
+      correctCount++;
+      fb.textContent = q.exp;
+      fb.className = 'q-feedback correct';
+      ProbabilityUtils.playSound('correct');
+    } else {
+      btn.classList.add('wrong');
+      document.querySelectorAll('.opt-btn')[q.correct].classList.add('correct');
+      fb.textContent = `❌ ${q.exp}`;
+      fb.className = 'q-feedback wrong';
+      ProbabilityUtils.playSound('wrong');
+    }
+    setTimeout(() => { currentQ++; loadQ(currentQ); }, 1800);
+  }
+
+  function showFinal() {
+    challengeDone = true;
+    const finalEl = document.getElementById('challengeFinal');
+    finalEl.classList.add('show');
+    document.getElementById('optionsList').innerHTML = '';
+    document.getElementById('challengeQ').textContent = '';
+    document.getElementById('qProgress').textContent = 'האתגר הסתיים!';
+
+    let stars;
+    if (correctCount >= 4) stars = 3;
+    else if (correctCount >= 2) stars = 2;
+    else stars = 1;
+    earnedStars = stars;
+
+    finalEl.textContent = `${'⭐'.repeat(stars)} ענית נכון על ${correctCount}/5! קיבלת ${stars} כוכבים!`;
+    if (stars >= 2) {
+      ProbabilityUtils.playSound('complete');
+      ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 60);
+    }
+  }
+
+  /* ── FINISH ── */
+  function finishModule() {
+    const stars = earnedStars || (totalDrawn > 0 ? 1 : 0);
+    const xp = stars * 30 + totalDrawn * 2;
+    localStorage.setItem('prob-module-4', JSON.stringify({ stars, completed: true, xp }));
+    if (window.ProbabilityApp?.completeModule) window.ProbabilityApp.completeModule('04-cards', stars);
+    ProbabilityUtils.showToast(`${'⭐'.repeat(stars)} קיבלת ${stars} כוכבים! +${xp} XP`, 'success', 3500);
+    ProbabilityUtils.playSound('complete');
+    ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 80);
+    setTimeout(() => { window.location.href = '../index.html'; }, 3500);
+  }
+
+  /* ── INIT ── */
+  buildDeckGrid();
+  updateDeckStatus();
+  updateStats();
+  loadQ(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="שקית הפלא — למד הסתברות עם כדורים צבעוניים בשקית אינטראקטיבית לילדים בגילאי 10-12" />
+  <title>שקית הפלא 🎒 — עולם ההסתברות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <style>
+    .module-main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+    .teaching-box {
+      background: linear-gradient(135deg, #ffe8d8, #ffcbaa);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .teaching-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .teaching-text { font-size: 0.95rem; line-height: 1.6; font-weight: 500; }
+
+    /* ── BAG STAGE ── */
+    .bag-stage {
+      background: linear-gradient(145deg, #fff8d6, #ffe8a0);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 1.5rem 1.25rem 2rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* SVG Bag */
+    .bag-visual-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .bag-svg-wrap {
+      position: relative;
+      width: 180px;
+      height: 200px;
+    }
+
+    .bag-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Marbles inside bag */
+    .bag-marbles {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+      align-items: flex-end;
+      max-height: 110px;
+      overflow: hidden;
+    }
+
+    .marble-in-bag {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.3);
+      box-shadow: inset -3px -3px 5px rgba(0,0,0,0.2), inset 2px 2px 4px rgba(255,255,255,0.5);
+      transition: all 0.3s;
+      animation: bounceIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    /* Drawn marble */
+    .drawn-marble-area {
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .drawn-marble {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 3px solid rgba(0,0,0,0.3);
+      box-shadow: -8px -8px 16px rgba(255,255,255,0.4), 8px 8px 16px rgba(0,0,0,0.2);
+      display: none;
+      animation: marblePop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes marblePop {
+      0%   { transform: scale(0); opacity: 0; }
+      60%  { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .drawn-marble.show { display: block; }
+
+    .drawn-marble-label {
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-align: center;
+      min-height: 1.5rem;
+    }
+
+    .btn-draw-marble {
+      background: var(--color-primary);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 900;
+      padding: 0.75rem 1.8rem;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-draw-marble:hover { transform: translateY(-2px); box-shadow: var(--shadow-fun-hover); }
+    .btn-draw-marble:active { transform: translateY(2px); box-shadow: 1px 1px 0 var(--color-dark); }
+    .btn-draw-marble:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Controls panel */
+    .controls-panel {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .color-control-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: white;
+      border: 2px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      box-shadow: 3px 3px 0 var(--color-dark);
+      padding: 0.5rem 0.75rem;
+    }
+    .marble-preview {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.25);
+      box-shadow: inset -2px -2px 4px rgba(0,0,0,0.15), inset 1px 1px 3px rgba(255,255,255,0.5);
+      flex-shrink: 0;
+    }
+    .color-name { font-weight: 900; font-size: 0.9rem; flex: 1; }
+    .count-display { font-size: 1.2rem; font-weight: 900; min-width: 2ch; text-align: center; }
+    .btn-count {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--color-dark);
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 var(--color-dark);
+      transition: transform 0.1s;
+      background: white;
+      font-family: var(--font-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-count:hover { transform: scale(1.15); }
+    .prob-badge {
+      background: #eef;
+      border-radius: var(--radius-sm);
+      padding: 0.15rem 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #333;
+      min-width: 52px;
+      text-align: center;
+    }
+
+    /* ── LIVE PROBABILITY ── */
+    .prob-section {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .prob-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.75rem; text-align: center; }
+    .prob-bars { display: flex; gap: 0.75rem; align-items: flex-end; justify-content: center; height: 100px; }
+    .prob-bar-col { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; flex: 1; max-width: 80px; }
+    .prob-bar-pct { font-size: 0.75rem; font-weight: 700; }
+    .prob-bar-track { width: 100%; height: 70px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; }
+    .prob-bar-fill { width: 100%; border-radius: 3px 3px 0 0; transition: height 0.4s cubic-bezier(0.34,1.56,0.64,1); min-height: 2px; }
+    .prob-bar-label { font-size: 0.8rem; font-weight: 700; }
+
+    /* Tally */
+    .tally-section {
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-top: 0.75rem;
+      color: #555;
+    }
+
+    /* ── CHALLENGE ── */
+    .challenge-section {
+      background: linear-gradient(145deg, #d8fef0, #a8f5da);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 1.5rem 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .challenge-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem; }
+    .challenge-desc { font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; }
+
+    .target-display {
+      display: inline-block;
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-fun);
+      padding: 0.5rem 1.25rem;
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+
+    .challenge-hint { font-size: 0.85rem; color: #444; margin-bottom: 0.75rem; }
+
+    .btn-check-bag {
+      background: var(--color-accent-3);
+      color: var(--color-dark);
+      font-size: 1rem;
+      font-weight: 900;
+      padding: 0.65rem 1.8rem;
+      border-radius: var(--radius-md);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.12s, box-shadow 0.12s;
+      font-family: var(--font-main);
+    }
+    .btn-check-bag:hover { transform: translateY(-2px); box-shadow: var(--shadow-fun-hover); }
+
+    .challenge-feedback {
+      margin-top: 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-align: center;
+      min-height: 1.5rem;
+    }
+    .challenge-feedback.win  { color: #06D6A0; }
+    .challenge-feedback.close { color: #FF6B35; }
+    .challenge-feedback.miss  { color: #EF476F; }
+
+    .finish-section { text-align: center; padding: 1rem 0; }
+    .btn-finish {
+      background: linear-gradient(135deg, #FFD166, #FF6B35);
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 900;
+      padding: 1rem 2.5rem;
+      border-radius: var(--radius-xl);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-finish:hover { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-fun-hover); }
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 900; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<header class="module-header">
+  <div class="module-header-inner">
+    <a href="../index.html" class="back-btn">← חזרה לבית</a>
+    <span style="font-size:1.2rem;font-weight:900;color:white;text-shadow:2px 2px 0 rgba(0,0,0,0.3);">עולם ההסתברות</span>
+    <span style="font-size:1.5rem;">🎒</span>
+  </div>
+</header>
+
+<main class="module-main">
+
+  <div class="teaching-box">
+    <span class="teaching-icon">💡</span>
+    <p class="teaching-text">
+      כשיש שקית עם כדורים צבעוניים, הסיכוי לשלוף כל צבע = <strong>מספר הכדורים מאותו צבע</strong> חלקי <strong>המספר הכולל</strong>.
+      אפשר לשנות את הכמויות ולראות כיצד הסיכויים משתנים — נסה!
+    </p>
+  </div>
+
+  <!-- Bag stage -->
+  <div class="bag-stage">
+    <!-- Bag visual -->
+    <div class="bag-visual-area">
+      <div class="bag-svg-wrap">
+        <!-- SVG bag shape -->
+        <svg class="bag-svg" viewBox="0 0 180 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Bag body -->
+          <path d="M30 70 Q20 90 15 130 Q10 170 90 178 Q170 170 165 130 Q160 90 150 70 Z"
+            fill="#8B4513" stroke="#1A1A2E" stroke-width="3"/>
+          <!-- Bag top/neck -->
+          <path d="M55 45 Q55 30 90 28 Q125 30 125 45 L130 70 Q90 60 50 70 Z"
+            fill="#A0522D" stroke="#1A1A2E" stroke-width="3"/>
+          <!-- Drawstring -->
+          <path d="M55 45 Q90 35 125 45" stroke="#1A1A2E" stroke-width="2.5" fill="none"/>
+          <!-- Highlight -->
+          <ellipse cx="70" cy="110" rx="18" ry="30" fill="rgba(255,255,255,0.12)" />
+        </svg>
+
+        <!-- Marbles inside -->
+        <div class="bag-marbles" id="bagMarbles"></div>
+      </div>
+
+      <!-- Drawn marble display -->
+      <div class="drawn-marble-area">
+        <div class="drawn-marble" id="drawnMarble"></div>
+      </div>
+      <div class="drawn-marble-label" id="drawnLabel">לחץ "שלוף כדור!" 🎒</div>
+
+      <button class="btn-draw-marble" id="btnDrawMarble" onclick="drawMarble()">🎒 שלוף כדור!</button>
+    </div>
+
+    <!-- Controls panel -->
+    <div class="controls-panel" id="controlsPanel"></div>
+  </div>
+
+  <!-- Probability display -->
+  <div class="prob-section">
+    <div class="prob-title">📊 הסתברות לכל צבע</div>
+    <div class="prob-bars" id="probBars"></div>
+    <div class="tally-section" id="tallySection">לא שלפת עדיין</div>
+  </div>
+
+  <!-- Challenge -->
+  <div class="challenge-section">
+    <div class="challenge-title">🎯 אתגר: P(אדום) = 1/3!</div>
+    <div class="challenge-desc">
+      כוון את הכדורים בשקית כך שהסיכוי לאדום יהיה בדיוק <strong>1/3 ≈ 33%</strong>.
+      השתמש ב+ ו- כדי לשנות את המספרים!
+    </div>
+    <div class="target-display">🎯 יעד: P(אדום) = 1/3</div>
+    <div class="challenge-hint" id="challengeHint">
+      רמז: 1/3 = 1 כדור אדום מתוך 3 כולל, או 2 מתוך 6, או 3 מתוך 9...
+    </div>
+    <button class="btn-check-bag" onclick="checkBagChallenge()">✅ בדוק!</button>
+    <div class="challenge-feedback" id="challengeFeedback"></div>
+  </div>
+
+  <div class="finish-section">
+    <button class="btn-finish" onclick="finishModule()">⭐ סיים וקבל כוכבים!</button>
+  </div>
+
+</main>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script src="../js/utils.js"></script>
+<script>
+  /* ── STATE ── */
+  const COLORS = [
+    { name: 'אדום',  color: '#EF476F', cssVar: '#EF476F', count: 3 },
+    { name: 'כחול',  color: '#4ECDC4', cssVar: '#4ECDC4', count: 3 },
+    { name: 'ירוק',  color: '#06D6A0', cssVar: '#06D6A0', count: 2 },
+  ];
+
+  let tallyCounts = {};
+  let totalDrawn = 0;
+  let isDrawing = false;
+  let earnedStars = 0;
+  let challengeAttempts = 0;
+
+  COLORS.forEach(c => tallyCounts[c.name] = 0);
+
+  /* ── BUILD CONTROLS ── */
+  function buildControls() {
+    const panel = document.getElementById('controlsPanel');
+    panel.innerHTML = '';
+
+    COLORS.forEach((c, i) => {
+      const row = document.createElement('div');
+      row.className = 'color-control-row';
+
+      const preview = document.createElement('div');
+      preview.className = 'marble-preview';
+      preview.style.background = c.color;
+
+      const name = document.createElement('div');
+      name.className = 'color-name';
+      name.textContent = c.name;
+
+      const btnMinus = document.createElement('button');
+      btnMinus.className = 'btn-count';
+      btnMinus.textContent = '−';
+      btnMinus.onclick = () => changeCount(i, -1);
+
+      const countDisp = document.createElement('div');
+      countDisp.className = 'count-display';
+      countDisp.id = `count-${i}`;
+      countDisp.textContent = c.count;
+
+      const btnPlus = document.createElement('button');
+      btnPlus.className = 'btn-count';
+      btnPlus.textContent = '+';
+      btnPlus.onclick = () => changeCount(i, 1);
+
+      const prob = document.createElement('div');
+      prob.className = 'prob-badge';
+      prob.id = `prob-badge-${i}`;
+      prob.textContent = calcProbBadge(i);
+
+      row.appendChild(preview);
+      row.appendChild(name);
+      row.appendChild(btnMinus);
+      row.appendChild(countDisp);
+      row.appendChild(btnPlus);
+      row.appendChild(prob);
+      panel.appendChild(row);
+    });
+  }
+
+  function calcProbBadge(idx) {
+    const total = COLORS.reduce((a, c) => a + c.count, 0);
+    if (total === 0) return '0/0';
+    const n = COLORS[idx].count;
+    return `${ProbabilityUtils.formatFraction(n, total)} = ${Math.round((n / total) * 100)}%`;
+  }
+
+  function changeCount(idx, delta) {
+    if (isDrawing) return;
+    COLORS[idx].count = Math.max(0, Math.min(15, COLORS[idx].count + delta));
+    document.getElementById(`count-${idx}`).textContent = COLORS[idx].count;
+    COLORS.forEach((_, i) => {
+      const el = document.getElementById(`prob-badge-${i}`);
+      if (el) el.textContent = calcProbBadge(i);
+    });
+    renderBagMarbles();
+    updateProbBars();
+    ProbabilityUtils.playSound('tick');
+  }
+
+  /* ── BAG MARBLES VISUAL ── */
+  function renderBagMarbles() {
+    const container = document.getElementById('bagMarbles');
+    container.innerHTML = '';
+    const all = [];
+    COLORS.forEach(c => {
+      for (let i = 0; i < c.count; i++) all.push(c);
+    });
+    ProbabilityUtils.shuffle(all);
+
+    const maxShow = Math.min(all.length, 20);
+    for (let i = 0; i < maxShow; i++) {
+      const m = document.createElement('div');
+      m.className = 'marble-in-bag';
+      m.style.background = all[i].color;
+      m.style.animationDelay = `${i * 0.03}s`;
+      container.appendChild(m);
+    }
+  }
+
+  /* ── DRAW MARBLE ── */
+  function drawMarble() {
+    const total = COLORS.reduce((a, c) => a + c.count, 0);
+    if (total === 0) {
+      ProbabilityUtils.showToast('השקית ריקה! הוסף כדורים.', 'error');
+      return;
+    }
+    if (isDrawing) return;
+    isDrawing = true;
+    document.getElementById('btnDrawMarble').disabled = true;
+    ProbabilityUtils.playSound('pop');
+
+    // Weighted random selection
+    let rand = Math.random() * total;
+    let chosen = COLORS[0];
+    for (const c of COLORS) {
+      rand -= c.count;
+      if (rand <= 0) { chosen = c; break; }
+    }
+
+    // Show drawn marble
+    const marbleEl = document.getElementById('drawnMarble');
+    marbleEl.style.background = chosen.color;
+    marbleEl.classList.remove('show');
+    void marbleEl.offsetWidth;
+    marbleEl.classList.add('show');
+
+    const label = document.getElementById('drawnLabel');
+    label.textContent = `יצא כדור ${chosen.name}!`;
+    label.style.color = chosen.color;
+    ProbabilityUtils.flashClass(label, 'anim-pop', 500);
+
+    tallyCounts[chosen.name]++;
+    totalDrawn++;
+    updateTally();
+    updateProbBars();
+
+    setTimeout(() => {
+      isDrawing = false;
+      document.getElementById('btnDrawMarble').disabled = false;
+    }, 600);
+  }
+
+  /* ── PROB BARS ── */
+  function updateProbBars() {
+    const bars = document.getElementById('probBars');
+    bars.innerHTML = '';
+    const total = COLORS.reduce((a, c) => a + c.count, 0);
+    const maxCount = Math.max(...COLORS.map(c => c.count), 1);
+
+    COLORS.forEach(c => {
+      const pct = total > 0 ? (c.count / total) * 100 : 0;
+      const barPct = (c.count / maxCount) * 100;
+
+      const col = document.createElement('div');
+      col.className = 'prob-bar-col';
+
+      const pctEl = document.createElement('div');
+      pctEl.className = 'prob-bar-pct';
+      pctEl.textContent = Math.round(pct) + '%';
+
+      const track = document.createElement('div');
+      track.className = 'prob-bar-track';
+
+      const fill = document.createElement('div');
+      fill.className = 'prob-bar-fill';
+      fill.style.background = c.color;
+      fill.style.height = barPct + '%';
+
+      track.appendChild(fill);
+
+      const lbl = document.createElement('div');
+      lbl.className = 'prob-bar-label';
+      lbl.textContent = c.name;
+
+      col.appendChild(pctEl);
+      col.appendChild(track);
+      col.appendChild(lbl);
+      bars.appendChild(col);
+    });
+  }
+
+  function updateTally() {
+    const parts = COLORS.map(c => `${c.name}: ${tallyCounts[c.name] || 0}`);
+    const tallyEl = document.getElementById('tallySection');
+    tallyEl.textContent = totalDrawn > 0
+      ? `סה"כ ${totalDrawn} שליפות | ${parts.join(' | ')}`
+      : 'לא שלפת עדיין';
+  }
+
+  /* ── CHALLENGE ── */
+  function checkBagChallenge() {
+    challengeAttempts++;
+    const redColor = COLORS.find(c => c.name === 'אדום');
+    const total = COLORS.reduce((a, c) => a + c.count, 0);
+
+    if (total === 0) {
+      document.getElementById('challengeFeedback').textContent = '⚠️ השקית ריקה!';
+      return;
+    }
+
+    const redRatio = redColor.count / total;
+    const target = 1 / 3;
+    const diff = Math.abs(redRatio - target);
+    const fb = document.getElementById('challengeFeedback');
+    let stars;
+
+    if (diff < 0.01) {
+      stars = 3;
+      fb.textContent = `🌟🌟🌟 מושלם! ${redColor.count}/${total} = 1/3! אלוף!`;
+      fb.className = 'challenge-feedback win';
+      ProbabilityUtils.playSound('complete');
+      ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 70);
+    } else if (diff < 0.07) {
+      stars = 2;
+      fb.textContent = `⭐⭐ קרוב! P(אדום) = ${ProbabilityUtils.formatFraction(redColor.count, total)} ≈ ${Math.round(redRatio * 100)}%. יעד: 33%.`;
+      fb.className = 'challenge-feedback close';
+      ProbabilityUtils.playSound('correct');
+    } else {
+      stars = 1;
+      fb.textContent = `⭐ P(אדום) = ${Math.round(redRatio * 100)}%. נסה שוב! רמז: ${redColor.count} אדומים מתוך ${total} כולל.`;
+      fb.className = 'challenge-feedback miss';
+      ProbabilityUtils.playSound('wrong');
+    }
+    earnedStars = Math.max(earnedStars, stars);
+  }
+
+  /* ── FINISH ── */
+  function finishModule() {
+    const stars = earnedStars || (totalDrawn > 0 ? 1 : 0);
+    const xp = stars * 30 + totalDrawn * 3;
+    localStorage.setItem('prob-module-5', JSON.stringify({ stars, completed: true, xp }));
+    if (window.ProbabilityApp?.completeModule) window.ProbabilityApp.completeModule('05-bag', stars);
+    ProbabilityUtils.showToast(`${'⭐'.repeat(stars)} קיבלת ${stars} כוכבים! +${xp} XP`, 'success', 3500);
+    ProbabilityUtils.playSound('complete');
+    ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 80);
+    setTimeout(() => { window.location.href = '../index.html'; }, 3500);
+  }
+
+  /* ── INIT ── */
+  buildControls();
+  renderBagMarbles();
+  updateProbBars();
+  updateTally();
+</script>
+</body>
+</html>

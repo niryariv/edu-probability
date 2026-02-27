@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="אלוף ההסתברות — המבחן הסופי עם 10 שאלות על כל הנושאים לילדים בגילאי 10-12" />
+  <title>אלוף ההסתברות 🏆 — עולם ההסתברות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <style>
+    .module-main { max-width: 820px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+    .teaching-box {
+      background: linear-gradient(135deg, #ffe8d8, #ffcbaa);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .teaching-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .teaching-text { font-size: 0.95rem; line-height: 1.6; font-weight: 500; }
+
+    /* ── QUIZ CARD ── */
+    .quiz-card {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 2rem 1.5rem;
+      margin-bottom: 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Flash overlay */
+    .quiz-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: var(--radius-xl);
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    .quiz-card.flash-correct::after {
+      background: rgba(6, 214, 160, 0.28);
+      opacity: 1;
+      animation: successFlash 0.6s ease forwards;
+    }
+    .quiz-card.flash-wrong::after {
+      background: rgba(239, 71, 111, 0.28);
+      opacity: 1;
+      animation: errorFlash 0.6s ease forwards;
+    }
+
+    /* Progress + timer row */
+    .quiz-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 0.75rem;
+    }
+
+    .q-number {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #666;
+      background: #f0f0f0;
+      border: 2px solid #ccc;
+      border-radius: var(--radius-sm);
+      padding: 0.25rem 0.7rem;
+    }
+
+    .score-display {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-accent-3);
+      background: rgba(6, 214, 160, 0.1);
+      border: 2px solid var(--color-accent-3);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem 0.7rem;
+    }
+
+    /* Timer */
+    .timer-ring-wrap {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+    .timer-ring {
+      transform: rotate(-90deg);
+      width: 52px;
+      height: 52px;
+    }
+    .timer-ring-bg { fill: none; stroke: #e0e0e0; stroke-width: 5; }
+    .timer-ring-fill {
+      fill: none;
+      stroke: var(--color-accent-3);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-dasharray: 126;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear, stroke 0.5s;
+    }
+    .timer-ring-fill.urgent { stroke: var(--color-accent-4); }
+    .timer-number {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    /* Progress bar */
+    .quiz-progress-track {
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-accent-3), var(--color-secondary));
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* Question text */
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+      color: var(--color-dark);
+      min-height: 3rem;
+    }
+    .question-emoji {
+      font-size: 1.5rem;
+      margin-left: 0.4rem;
+    }
+
+    /* Options */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 500px) {
+      .options-grid { grid-template-columns: 1fr; }
+    }
+
+    .option-btn {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      box-shadow: 3px 3px 0 var(--color-dark);
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+      font-family: var(--font-main);
+      color: var(--color-dark);
+      position: relative;
+      overflow: hidden;
+    }
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-3px) translateX(-1px);
+      box-shadow: 4px 4px 0 var(--color-dark);
+      background: #fafafa;
+    }
+    .option-btn:active:not(:disabled) {
+      transform: translateY(1px);
+      box-shadow: 1px 1px 0 var(--color-dark);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct {
+      background: #06D6A0;
+      border-color: #04a578;
+      animation: bounceIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .option-btn.wrong {
+      background: #EF476F;
+      color: white;
+      border-color: #c02850;
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    /* Feedback */
+    .answer-feedback {
+      margin-top: 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      min-height: 1.5rem;
+      line-height: 1.5;
+    }
+    .answer-feedback.correct { color: #04a578; }
+    .answer-feedback.wrong   { color: #c02850; }
+
+    /* Timeout indicator */
+    .timeout-badge {
+      display: none;
+      background: #EF476F;
+      color: white;
+      font-weight: 900;
+      font-size: 0.85rem;
+      padding: 0.2rem 0.75rem;
+      border-radius: var(--radius-sm);
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    .timeout-badge.show { display: block; animation: bounceIn 0.3s both; }
+
+    /* ── RESULTS SCREEN ── */
+    .results-screen {
+      display: none;
+      text-align: center;
+      padding: 1rem 0 2rem;
+    }
+    .results-screen.show { display: block; animation: fadeIn 0.5s ease both; }
+
+    .trophy-emoji {
+      font-size: 5rem;
+      display: block;
+      margin-bottom: 0.75rem;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    /* Certificate */
+    .certificate {
+      background: linear-gradient(135deg, #fff8d6, #ffe8a0);
+      border: 4px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: 8px 8px 0 var(--color-dark);
+      padding: 2.5rem 2rem;
+      margin: 1.5rem auto;
+      max-width: 420px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cert-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.06;
+      font-size: 8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .cert-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--color-primary);
+      text-shadow: 2px 2px 0 rgba(255,107,53,0.2);
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+    .cert-subtitle {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+    .cert-name {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--color-dark);
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+    .cert-stars {
+      font-size: 2.5rem;
+      letter-spacing: 0.3rem;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .cert-score {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--color-accent-2);
+      position: relative;
+    }
+    .cert-score-label {
+      font-size: 0.9rem;
+      color: #777;
+      font-weight: 700;
+      position: relative;
+    }
+    .cert-divider {
+      width: 80%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+      margin: 1rem auto;
+    }
+
+    /* Score breakdown */
+    .score-breakdown {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    .score-pill {
+      padding: 0.3rem 0.7rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 2px solid var(--color-dark);
+    }
+    .score-pill.right { background: #c8f7e4; }
+    .score-pill.wrong { background: #ffd0d9; }
+    .score-pill.skip  { background: #f0f0f0; }
+
+    .btn-finish-quiz {
+      background: linear-gradient(135deg, #FFD166, #FF6B35);
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 900;
+      padding: 1rem 2.5rem;
+      border-radius: var(--radius-xl);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+      margin-top: 1.25rem;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+    }
+    .btn-finish-quiz:hover { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-fun-hover); }
+
+    .btn-retry {
+      background: white;
+      color: var(--color-dark);
+      font-size: 1rem;
+      font-weight: 900;
+      padding: 0.7rem 1.8rem;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s;
+      font-family: var(--font-main);
+      margin-top: 0.75rem;
+    }
+    .btn-retry:hover { transform: translateY(-2px); }
+
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 900; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<header class="module-header">
+  <div class="module-header-inner">
+    <a href="../index.html" class="back-btn">← חזרה לבית</a>
+    <span style="font-size:1.2rem;font-weight:900;color:white;text-shadow:2px 2px 0 rgba(0,0,0,0.3);">עולם ההסתברות</span>
+    <span style="font-size:1.5rem;">🏆</span>
+  </div>
+</header>
+
+<main class="module-main">
+
+  <div class="teaching-box">
+    <span class="teaching-icon">🏆</span>
+    <p class="teaching-text">
+      זהו המבחן הסופי! <strong>10 שאלות</strong> על כל הנושאים שלמדנו — מטבע, קוביות, גלגל, קלפים וכדורים.
+      יש לך <strong>20 שניות</strong> לכל שאלה. אם תענה על 8+ נכון — תהיה <strong>אלוף ההסתברות</strong>!
+    </p>
+  </div>
+
+  <!-- Quiz card -->
+  <div class="quiz-card" id="quizCard">
+    <div class="quiz-header-row">
+      <div class="q-number" id="qNumber">שאלה 1/10</div>
+      <div class="timer-ring-wrap">
+        <svg class="timer-ring" viewBox="0 0 52 52">
+          <circle class="timer-ring-bg" cx="26" cy="26" r="20"/>
+          <circle class="timer-ring-fill" id="timerRing" cx="26" cy="26" r="20"/>
+        </svg>
+        <div class="timer-number" id="timerNum">20</div>
+      </div>
+      <div class="score-display" id="scoreDisplay">✅ 0 / ❌ 0</div>
+    </div>
+
+    <div class="quiz-progress-track">
+      <div class="quiz-progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+
+    <div class="question-text" id="questionText">טוען...</div>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="answer-feedback" id="answerFeedback"></div>
+    <div class="timeout-badge" id="timeoutBadge">⏰ הזמן נגמר!</div>
+  </div>
+
+  <!-- Results screen (hidden initially) -->
+  <div class="results-screen" id="resultsScreen">
+    <span class="trophy-emoji" id="trophyEmoji">🏆</span>
+
+    <div class="certificate" id="certificate">
+      <div class="cert-bg">🎓</div>
+      <div class="cert-title">תעודת אלוף!</div>
+      <div class="cert-subtitle">בגאון הושלם מבחן ההסתברות</div>
+      <div class="cert-divider"></div>
+      <div class="cert-name">אלוף ההסתברות!</div>
+      <div class="cert-stars" id="certStars">⭐⭐⭐</div>
+      <div class="cert-score" id="certScore">10/10</div>
+      <div class="cert-score-label">תשובות נכונות</div>
+      <div class="cert-divider"></div>
+      <div style="font-size:0.85rem;color:#777;margin-top:0.5rem;position:relative;">
+        עולם ההסתברות | 2025
+      </div>
+    </div>
+
+    <div class="score-breakdown" id="scoreBreakdown"></div>
+
+    <div>
+      <button class="btn-finish-quiz" onclick="finishModule()">🏠 חזרה לתפריט הראשי!</button>
+      <br>
+      <button class="btn-retry" onclick="restartQuiz()">↺ נסה שוב</button>
+    </div>
+  </div>
+
+</main>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script src="../js/utils.js"></script>
+<script>
+  /* ── QUESTIONS ── */
+  const QUESTIONS = [
+    {
+      q: 'יש לנו מטבע. מה הסיכוי שיצא עץ? 🪙',
+      opts: ['א) 1/3', 'ב) 1/2', 'ג) 2/3', 'ד) 1/4'],
+      correct: 1,
+      exp: 'נכון! מטבע הוגן — שתי תוצאות, P(עץ) = 1/2 = 50%'
+    },
+    {
+      q: 'בקוביה רגילה, מה הסיכוי שיצא מספר זוגי? 🎲',
+      opts: ['א) 1/6', 'ב) 1/3', 'ג) 1/2', 'ד) 2/3'],
+      correct: 2,
+      exp: 'נכון! מספרים זוגיים: 2, 4, 6 — שלושה מתוך שישה. P(זוגי) = 3/6 = 1/2'
+    },
+    {
+      q: 'בשקית יש 4 אדומות ו-6 כחולות. מה P(אדומה)? 🎒',
+      opts: ['א) 4/6', 'ב) 4/10 = 2/5', 'ג) 1/4', 'ד) 6/10'],
+      correct: 1,
+      exp: 'נכון! 4 אדומות מתוך 10 כולל. P(אדומה) = 4/10 = 2/5 = 40%'
+    },
+    {
+      q: 'מה ההשלמה של אירוע שסיכויו 0.3? 💡',
+      opts: ['א) 0.3', 'ב) 0.4', 'ג) 0.7', 'ד) 1.3'],
+      correct: 2,
+      exp: 'נכון! P(לא מתרחש) = 1 − P(מתרחש) = 1 − 0.3 = 0.7'
+    },
+    {
+      q: 'בחפיסת קלפים, מה P(קלף תמונה = J, Q, K)? ♠️',
+      opts: ['א) 3/52', 'ב) 12/52 = 3/13', 'ג) 4/52', 'ד) 1/4'],
+      correct: 1,
+      exp: 'נכון! 4 צבאות × 3 קלפי תמונה = 12. P(תמונה) = 12/52 = 3/13 ≈ 23%'
+    },
+    {
+      q: 'מה P(1 או 2) בזריקת קוביה? 🎲',
+      opts: ['א) 1/6', 'ב) 2/6 = 1/3', 'ג) 1/2', 'ד) 2/3'],
+      correct: 1,
+      exp: 'נכון! שתי תוצאות טובות (1 ו-2) מתוך שש. P(1 או 2) = 2/6 = 1/3 ≈ 33%'
+    },
+    {
+      q: 'בשקית: 2 אדום, 3 ירוק, 5 כחול. מה P(לא כחול)? 🎒',
+      opts: ['א) 5/10', 'ב) 2/10', 'ג) 3/10', 'ד) 5/10 = 1/2'],
+      correct: 0,
+      exp: 'נכון! לא כחול = אדום + ירוק = 2+3 = 5. P(לא כחול) = 5/10 = 1/2'
+    },
+    {
+      q: 'מטילים מטבע פעמיים. כמה תוצאות שונות אפשריות? 🪙🪙',
+      opts: ['א) 2', 'ב) 3', 'ג) 4', 'ד) 6'],
+      correct: 2,
+      exp: 'נכון! עץ-עץ, עץ-פלי, פלי-עץ, פלי-פלי — 4 תוצאות. בכלל: 2² = 4'
+    },
+    {
+      q: 'P(עץ) = 0.4. מה P(פלי)? 🪙',
+      opts: ['א) 0.4', 'ב) 0.5', 'ג) 0.6', 'ד) 1.4'],
+      correct: 2,
+      exp: 'נכון! P(עץ) + P(פלי) = 1. לכן P(פלי) = 1 − 0.4 = 0.6'
+    },
+    {
+      q: 'מה הסיכוי לזרוק 6 בקוביה 3 פעמים ברציפות? 🎲🎲🎲',
+      opts: ['א) 3/6 = 1/2', 'ב) 1/36', 'ג) 1/216', 'ד) 1/18'],
+      correct: 2,
+      exp: 'נכון! (1/6) × (1/6) × (1/6) = 1/216 ≈ 0.46%. אירועים בלתי תלויים מוכפלים!'
+    },
+  ];
+
+  /* ── STATE ── */
+  let currentQ = 0;
+  let correctCount = 0;
+  let wrongCount = 0;
+  let results = [];   // 'correct' | 'wrong' | 'timeout'
+  let timerInterval = null;
+  let timeLeft = 20;
+  let questionActive = false;
+  let TIMER_DURATION = 20;
+  const CIRCUMFERENCE = 2 * Math.PI * 20; // ≈ 125.66
+
+  /* ── QUIZ ENGINE ── */
+  function startQuiz() {
+    currentQ = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    results = [];
+    document.getElementById('quizCard').style.display = 'block';
+    document.getElementById('resultsScreen').classList.remove('show');
+    loadQuestion(0);
+  }
+
+  function loadQuestion(idx) {
+    if (idx >= QUESTIONS.length) {
+      endQuiz();
+      return;
+    }
+    const q = QUESTIONS[idx];
+    questionActive = true;
+
+    // Update header
+    document.getElementById('qNumber').textContent = `שאלה ${idx + 1}/10`;
+    document.getElementById('scoreDisplay').textContent = `✅ ${correctCount} / ❌ ${wrongCount}`;
+    document.getElementById('progressFill').style.width = `${(idx / 10) * 100}%`;
+
+    // Question text
+    document.getElementById('questionText').textContent = q.q;
+    document.getElementById('answerFeedback').textContent = '';
+    document.getElementById('answerFeedback').className = 'answer-feedback';
+    document.getElementById('timeoutBadge').className = 'timeout-badge';
+
+    // Remove card flash
+    const card = document.getElementById('quizCard');
+    card.className = 'quiz-card';
+
+    // Options
+    const grid = document.getElementById('optionsGrid');
+    grid.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.onclick = () => answerQuestion(i, btn, q);
+      grid.appendChild(btn);
+    });
+
+    // Start timer
+    startTimer();
+
+    // Animate question in
+    document.getElementById('questionText').classList.add('anim-fade-in-up');
+    setTimeout(() => document.getElementById('questionText').classList.remove('anim-fade-in-up'), 500);
+  }
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    timeLeft = TIMER_DURATION;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        onTimeout();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const numEl = document.getElementById('timerNum');
+    const ringEl = document.getElementById('timerRing');
+    numEl.textContent = timeLeft;
+
+    const progress = timeLeft / TIMER_DURATION;
+    const offset = CIRCUMFERENCE * (1 - progress);
+    ringEl.style.strokeDashoffset = offset;
+    ringEl.style.strokeDasharray = CIRCUMFERENCE;
+
+    if (timeLeft <= 7) {
+      ringEl.classList.add('urgent');
+      numEl.style.color = '#EF476F';
+      if (timeLeft <= 5) ProbabilityUtils.playSound('tick');
+    } else {
+      ringEl.classList.remove('urgent');
+      numEl.style.color = '';
+    }
+  }
+
+  function onTimeout() {
+    if (!questionActive) return;
+    questionActive = false;
+    ProbabilityUtils.playSound('wrong');
+
+    const q = QUESTIONS[currentQ];
+    const grid = document.getElementById('optionsGrid');
+    grid.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    grid.querySelectorAll('.option-btn')[q.correct].classList.add('correct');
+
+    document.getElementById('timeoutBadge').className = 'timeout-badge show';
+    document.getElementById('answerFeedback').textContent = `⏰ הזמן נגמר! התשובה הנכונה: ${q.opts[q.correct]}`;
+    document.getElementById('answerFeedback').className = 'answer-feedback wrong';
+
+    wrongCount++;
+    results.push('timeout');
+    document.getElementById('quizCard').classList.add('flash-wrong');
+
+    setTimeout(() => {
+      document.getElementById('quizCard').classList.remove('flash-wrong');
+      currentQ++;
+      loadQuestion(currentQ);
+    }, 2200);
+  }
+
+  function answerQuestion(chosen, btn, q) {
+    if (!questionActive) return;
+    questionActive = false;
+    clearInterval(timerInterval);
+
+    const grid = document.getElementById('optionsGrid');
+    grid.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+    const fb = document.getElementById('answerFeedback');
+    const card = document.getElementById('quizCard');
+
+    if (chosen === q.correct) {
+      btn.classList.add('correct');
+      correctCount++;
+      results.push('correct');
+      fb.textContent = `✅ ${q.exp}`;
+      fb.className = 'answer-feedback correct';
+      ProbabilityUtils.playSound('correct');
+      card.classList.add('flash-correct');
+    } else {
+      btn.classList.add('wrong');
+      grid.querySelectorAll('.option-btn')[q.correct].classList.add('correct');
+      wrongCount++;
+      results.push('wrong');
+      fb.textContent = `❌ ${q.exp}`;
+      fb.className = 'answer-feedback wrong';
+      ProbabilityUtils.playSound('wrong');
+      card.classList.add('flash-wrong');
+    }
+
+    document.getElementById('scoreDisplay').textContent = `✅ ${correctCount} / ❌ ${wrongCount}`;
+
+    setTimeout(() => {
+      card.classList.remove('flash-correct', 'flash-wrong');
+      currentQ++;
+      loadQuestion(currentQ);
+    }, 2000);
+  }
+
+  /* ── END QUIZ ── */
+  function endQuiz() {
+    clearInterval(timerInterval);
+    document.getElementById('quizCard').style.display = 'none';
+    document.getElementById('resultsScreen').classList.add('show');
+
+    // Stars
+    let stars;
+    if (correctCount >= 8) stars = 3;
+    else if (correctCount >= 5) stars = 2;
+    else { stars = 1; }
+
+    // Certificate
+    document.getElementById('certStars').textContent = '⭐'.repeat(stars);
+    document.getElementById('certScore').textContent = `${correctCount}/10`;
+
+    // Trophy
+    const trophies = ['🥉', '🥈', '🥇'];
+    document.getElementById('trophyEmoji').textContent = trophies[stars - 1];
+
+    // Score breakdown
+    const breakdown = document.getElementById('scoreBreakdown');
+    breakdown.innerHTML = '';
+    results.forEach((r, i) => {
+      const pill = document.createElement('div');
+      let cls, txt;
+      if (r === 'correct') { cls = 'right'; txt = `✅ ${i + 1}`; }
+      else if (r === 'wrong') { cls = 'wrong'; txt = `❌ ${i + 1}`; }
+      else { cls = 'skip'; txt = `⏰ ${i + 1}`; }
+      pill.className = `score-pill ${cls}`;
+      pill.textContent = txt;
+      breakdown.appendChild(pill);
+    });
+
+    // Sounds and confetti
+    if (stars === 3) {
+      ProbabilityUtils.playSound('complete');
+      ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 100);
+    } else if (stars === 2) {
+      ProbabilityUtils.playSound('correct');
+      ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 50);
+    } else {
+      ProbabilityUtils.playSound('correct');
+    }
+
+    // Save progress
+    const xp = correctCount * 15 + stars * 30;
+    localStorage.setItem('prob-module-6', JSON.stringify({
+      stars, completed: true, xp,
+      score: correctCount, total: 10
+    }));
+    if (window.ProbabilityApp?.completeModule) window.ProbabilityApp.completeModule('06-quiz', stars);
+  }
+
+  function restartQuiz() {
+    startQuiz();
+  }
+
+  function finishModule() {
+    ProbabilityUtils.showToast('חוזרים לתפריט הראשי!', 'success', 2000);
+    setTimeout(() => { window.location.href = '../index.html'; }, 1800);
+  }
+
+  /* ── INIT ── */
+  startQuiz();
+</script>
+</body>
+</html>

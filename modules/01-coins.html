@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="עולם המטבעות — למד הסתברות בזריקת מטבע עם אנימציות אינטראקטיביות לילדים בגילאי 10-12" />
+  <title>עולם המטבע 🪙 — עולם ההסתברות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <style>
+    /* ── MODULE 1 LOCAL STYLES ── */
+    .module-main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+
+    .teaching-box {
+      background: linear-gradient(135deg, #fff8d6, #ffe8a0);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .teaching-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .teaching-text { font-size: 0.95rem; line-height: 1.6; font-weight: 500; }
+
+    /* Coin stage */
+    .coin-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      background: linear-gradient(145deg, #d8f5f5, #a0e8e8);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 2rem 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    /* 3D coin */
+    .coin-wrapper {
+      perspective: 600px;
+      width: 140px;
+      height: 140px;
+    }
+    .coin {
+      width: 140px;
+      height: 140px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.05s linear;
+    }
+    .coin.flipping {
+      animation: coinFlipFull 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    @keyframes coinFlipFull {
+      0%   { transform: rotateY(0deg) translateY(0); }
+      20%  { transform: rotateY(180deg) translateY(-50px); }
+      40%  { transform: rotateY(360deg) translateY(-80px); }
+      60%  { transform: rotateY(540deg) translateY(-50px); }
+      80%  { transform: rotateY(680deg) translateY(-15px); }
+      90%  { transform: rotateY(700deg) translateY(-5px); }
+      100% { transform: rotateY(720deg) translateY(0); }
+    }
+    .coin-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 4px solid #8B6914;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      font-weight: 900;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      box-shadow: inset 0 -8px 20px rgba(0,0,0,0.25), inset 0 4px 10px rgba(255,255,255,0.4);
+      user-select: none;
+    }
+    .coin-heads {
+      background: radial-gradient(circle at 35% 35%, #FFE47A, #D4A017);
+      transform: rotateY(0deg);
+    }
+    .coin-tails {
+      background: radial-gradient(circle at 35% 35%, #E8E8E8, #A0A0A0);
+      transform: rotateY(180deg);
+    }
+
+    /* Result text */
+    .coin-result {
+      font-size: 1.6rem;
+      font-weight: 900;
+      min-height: 2.2rem;
+      text-align: center;
+      transition: opacity 0.2s;
+    }
+    .coin-result.heads { color: #B8860B; }
+    .coin-result.tails { color: #555; }
+
+    /* Flip button */
+    .btn-flip {
+      background: var(--color-primary);
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 900;
+      padding: 0.8rem 2.2rem;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-flip:hover { transform: translateY(-3px); box-shadow: var(--shadow-fun-hover); }
+    .btn-flip:active { transform: translateY(2px); box-shadow: 1px 1px 0 var(--color-dark); }
+    .btn-flip:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Counters */
+    .counters-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .counter-chip {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      box-shadow: 3px 3px 0 var(--color-dark);
+      padding: 0.5rem 1rem;
+      text-align: center;
+      min-width: 90px;
+    }
+    .counter-label { font-size: 0.75rem; font-weight: 700; color: #666; }
+    .counter-value { font-size: 1.6rem; font-weight: 900; color: var(--color-dark); }
+    .counter-chip.heads-chip .counter-value { color: #B8860B; }
+    .counter-chip.tails-chip .counter-value { color: #888; }
+    .counter-chip.total-chip .counter-value { color: var(--color-primary); }
+
+    /* Probability display */
+    .prob-display {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .prob-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+    .prob-row {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .prob-chip {
+      background: linear-gradient(135deg, #f0f9ff, #dbeafe);
+      border: 2px solid var(--color-dark);
+      border-radius: var(--radius-md);
+      padding: 0.4rem 1rem;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* Bar chart */
+    .bar-chart {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-end;
+      justify-content: center;
+      height: 120px;
+      padding: 0 1rem;
+    }
+    .bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      flex: 1;
+      max-width: 120px;
+    }
+    .bar-pct { font-size: 0.8rem; font-weight: 700; }
+    .bar-track {
+      width: 100%;
+      height: 90px;
+      background: #f0f0f0;
+      border: 2px solid #ccc;
+      border-radius: 6px 6px 0 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+    .bar-fill {
+      width: 100%;
+      transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: 4px 4px 0 0;
+    }
+    .bar-fill.heads-fill { background: linear-gradient(to top, #D4A017, #FFE47A); }
+    .bar-fill.tails-fill { background: linear-gradient(to top, #777, #ccc); }
+    .bar-label { font-size: 0.85rem; font-weight: 700; }
+
+    /* ── CHALLENGE SECTION ── */
+    .challenge-section {
+      background: linear-gradient(145deg, #ece0ff, #d4b8ff);
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-fun);
+      padding: 1.5rem 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .challenge-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .challenge-desc {
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+      color: #333;
+    }
+
+    /* Prediction grid */
+    .prediction-grid {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .flip-btn-small {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 3px solid var(--color-dark);
+      font-size: 1.3rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 var(--color-dark);
+      transition: transform 0.12s, box-shadow 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      font-family: var(--font-main);
+    }
+    .flip-btn-small:hover { transform: scale(1.1); }
+    .flip-btn-small.selected-heads { background: linear-gradient(135deg, #FFE47A, #D4A017); }
+    .flip-btn-small.selected-tails { background: linear-gradient(135deg, #ddd, #aaa); color: white; }
+    .flip-btn-small.result-correct { border-color: #06D6A0; box-shadow: 3px 3px 0 #06D6A0; }
+    .flip-btn-small.result-wrong   { border-color: #EF476F; box-shadow: 3px 3px 0 #EF476F; }
+
+    .prediction-labels {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .pred-label { width: 52px; text-align: center; color: #555; }
+
+    .challenge-btns {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .btn-challenge {
+      background: var(--color-accent-2);
+      color: white;
+      font-size: 1rem;
+      font-weight: 900;
+      padding: 0.65rem 1.5rem;
+      border-radius: var(--radius-md);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-challenge:hover { transform: translateY(-2px); box-shadow: var(--shadow-fun-hover); }
+    .btn-challenge:active { transform: translateY(1px); box-shadow: 1px 1px 0 var(--color-dark); }
+    .btn-challenge:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-reset {
+      background: #e0e0e0;
+      color: var(--color-dark);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-md);
+      border: 3px solid var(--color-dark);
+      box-shadow: 3px 3px 0 var(--color-dark);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+    }
+    .btn-reset:hover { transform: translateY(-2px); box-shadow: var(--shadow-fun-hover); }
+
+    .challenge-result {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      min-height: 1.6rem;
+      text-align: center;
+      display: none;
+    }
+    .challenge-result.show { display: block; }
+    .challenge-result.good { color: #06D6A0; }
+    .challenge-result.ok   { color: #FF6B35; }
+    .challenge-result.bad  { color: #EF476F; }
+
+    /* Teaching popup */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,46,0.7);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .popup-overlay.active { display: flex; }
+    .popup-box {
+      background: white;
+      border: 3px solid var(--color-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: 8px 8px 0 var(--color-dark);
+      padding: 2rem 2.5rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      animation: bounceIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .popup-emoji { font-size: 3rem; margin-bottom: 0.5rem; }
+    .popup-title { font-size: 1.4rem; font-weight: 900; margin-bottom: 0.75rem; }
+    .popup-text  { font-size: 1rem; line-height: 1.6; margin-bottom: 1.25rem; }
+    .btn-popup-close {
+      background: var(--color-primary);
+      color: white;
+      font-size: 1rem;
+      font-weight: 900;
+      padding: 0.6rem 1.8rem;
+      border-radius: var(--radius-md);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      font-family: var(--font-main);
+    }
+
+    /* Finish section */
+    .finish-section {
+      text-align: center;
+      padding: 1rem 0;
+    }
+    .btn-finish {
+      background: linear-gradient(135deg, #FFD166, #FF6B35);
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 900;
+      padding: 1rem 2.5rem;
+      border-radius: var(--radius-xl);
+      border: 3px solid var(--color-dark);
+      box-shadow: var(--shadow-fun);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font-main);
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+    }
+    .btn-finish:hover { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-fun-hover); }
+    .btn-finish:active { transform: translateY(2px); box-shadow: 1px 1px 0 var(--color-dark); }
+
+    .confetti-wrap {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 900;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation header -->
+<header class="module-header">
+  <div class="module-header-inner">
+    <a href="../index.html" class="back-btn">← חזרה לבית</a>
+    <span style="font-size:1.2rem;font-weight:900;color:white;text-shadow:2px 2px 0 rgba(0,0,0,0.3);">עולם ההסתברות</span>
+    <span style="font-size:1.5rem;">🪙</span>
+  </div>
+</header>
+
+<main class="module-main">
+
+  <!-- Teaching box -->
+  <div class="teaching-box">
+    <span class="teaching-icon">💡</span>
+    <p class="teaching-text">
+      בהטלת מטבע יש שתי תוצאות אפשריות: <strong>עץ</strong> ו<strong>פלי</strong>. הסיכוי לכל תוצאה הוא <strong>1/2 = 50%</strong>.
+      ככל שנטיל יותר פעמים, התוצאות מתקרבות לחלוקה שווה — זה נקרא <em>חוק המספרים הגדולים</em>!
+    </p>
+  </div>
+
+  <!-- Coin stage -->
+  <div class="coin-stage">
+    <div class="coin-wrapper" aria-label="מטבע">
+      <div class="coin" id="coin">
+        <div class="coin-face coin-heads" id="coinHeads">🌳</div>
+        <div class="coin-face coin-tails" id="coinTails">👑</div>
+      </div>
+    </div>
+
+    <div class="coin-result" id="coinResult">לחץ כדי להטיל!</div>
+
+    <button class="btn-flip" id="btnFlip" onclick="flipCoin()">🪙 הטל מטבע!</button>
+
+    <div class="counters-row">
+      <div class="counter-chip heads-chip">
+        <div class="counter-label">עץ 🌳</div>
+        <div class="counter-value" id="cntHeads">0</div>
+      </div>
+      <div class="counter-chip tails-chip">
+        <div class="counter-label">פלי 👑</div>
+        <div class="counter-value" id="cntTails">0</div>
+      </div>
+      <div class="counter-chip total-chip">
+        <div class="counter-label">סה"כ הטלות</div>
+        <div class="counter-value" id="cntTotal">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live probability display -->
+  <div class="prob-display">
+    <div class="prob-title">📊 הסתברות חיה</div>
+    <div class="prob-row">
+      <div class="prob-chip" id="probHeadsChip">P(עץ) = 0/0 = –</div>
+      <div class="prob-chip" id="probTailsChip">P(פלי) = 0/0 = –</div>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="bar-chart">
+      <div class="bar-col">
+        <div class="bar-pct" id="pctHeads">0%</div>
+        <div class="bar-track">
+          <div class="bar-fill heads-fill" id="barHeads" style="height:0%"></div>
+        </div>
+        <div class="bar-label">עץ 🌳</div>
+      </div>
+      <div class="bar-col">
+        <div class="bar-pct" id="pctTails">0%</div>
+        <div class="bar-track">
+          <div class="bar-fill tails-fill" id="barTails" style="height:0%"></div>
+        </div>
+        <div class="bar-label">פלי 👑</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Challenge section -->
+  <div class="challenge-section">
+    <div class="challenge-title">🎯 אתגר: נבא 10 הטלות!</div>
+    <div class="challenge-desc">
+      לחץ על כל כפתור כדי לנבא אם יצא <strong>עץ (🌳)</strong> או <strong>פלי (👑)</strong>. אחרי שתנבא את כולם — לחץ "בצע הטלות" ונראה כמה ניחשת נכון!
+    </div>
+
+    <div class="prediction-labels" id="predLabels">
+      <!-- labels filled by JS -->
+    </div>
+    <div class="prediction-grid" id="predGrid">
+      <!-- buttons filled by JS -->
+    </div>
+
+    <div class="challenge-btns">
+      <button class="btn-challenge" id="btnRunChallenge" onclick="runChallenge()" disabled>▶ בצע הטלות!</button>
+      <button class="btn-reset" onclick="resetChallenge()">↺ אפס אתגר</button>
+    </div>
+
+    <div class="challenge-result" id="challengeResult"></div>
+  </div>
+
+  <!-- Finish -->
+  <div class="finish-section">
+    <button class="btn-finish" onclick="finishModule()">⭐ סיים וקבל כוכבים!</button>
+  </div>
+
+</main>
+
+<!-- Teaching popup -->
+<div class="popup-overlay" id="teachingPopup">
+  <div class="popup-box">
+    <div class="popup-emoji">🪙</div>
+    <div class="popup-title" id="popupTitle">כל הכבוד!</div>
+    <p class="popup-text" id="popupText">כאשר הסיכוי שווה, כל תוצאה מתרחשת בערך מחצית הזמן!</p>
+    <button class="btn-popup-close" onclick="closePopup()">הבנתי! 👍</button>
+  </div>
+</div>
+
+<!-- Confetti container -->
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script src="../js/utils.js"></script>
+<script>
+  /* ── STATE ── */
+  let heads = 0, tails = 0, total = 0;
+  let isFlipping = false;
+  let predictions = Array(10).fill(null);
+  let challengeDone = false;
+  let earnedStars = 0;
+
+  /* ── COIN FLIP ── */
+  function flipCoin() {
+    if (isFlipping) return;
+    isFlipping = true;
+
+    const btn = document.getElementById('btnFlip');
+    btn.disabled = true;
+    ProbabilityUtils.playSound('flip');
+
+    const coin = document.getElementById('coin');
+    const resultEl = document.getElementById('coinResult');
+
+    // Determine result
+    const result = Math.random() < 0.5 ? 'heads' : 'tails';
+
+    // Start animation
+    coin.classList.remove('flipping');
+    void coin.offsetWidth; // reflow
+    coin.classList.add('flipping');
+
+    setTimeout(() => {
+      // Show result
+      if (result === 'heads') {
+        heads++;
+        resultEl.textContent = '🌳 יצא עץ!';
+        resultEl.className = 'coin-result heads anim-bounce-in';
+        // Keep heads face visible
+        coin.style.transform = 'rotateY(720deg)';
+      } else {
+        tails++;
+        resultEl.textContent = '👑 יצא פלי!';
+        resultEl.className = 'coin-result tails anim-bounce-in';
+        // Keep tails face visible
+        coin.style.transform = 'rotateY(900deg)';
+      }
+      total++;
+
+      coin.classList.remove('flipping');
+      updateCounters();
+      updateProbability();
+      updateBars();
+
+      isFlipping = false;
+      btn.disabled = false;
+    }, 1200);
+  }
+
+  function updateCounters() {
+    document.getElementById('cntHeads').textContent = heads;
+    document.getElementById('cntTails').textContent = tails;
+    document.getElementById('cntTotal').textContent = total;
+  }
+
+  function updateProbability() {
+    const hPct = total > 0 ? Math.round((heads / total) * 100) : 0;
+    const tPct = total > 0 ? Math.round((tails / total) * 100) : 0;
+    const hFrac = total > 0 ? ProbabilityUtils.formatFraction(heads, total) : '0/0';
+    const tFrac = total > 0 ? ProbabilityUtils.formatFraction(tails, total) : '0/0';
+
+    document.getElementById('probHeadsChip').textContent =
+      `P(עץ) = ${hFrac} = ${hPct}%`;
+    document.getElementById('probTailsChip').textContent =
+      `P(פלי) = ${tFrac} = ${tPct}%`;
+  }
+
+  function updateBars() {
+    const hPct = total > 0 ? (heads / total) * 100 : 0;
+    const tPct = total > 0 ? (tails / total) * 100 : 0;
+
+    document.getElementById('barHeads').style.height = hPct + '%';
+    document.getElementById('barTails').style.height = tPct + '%';
+    document.getElementById('pctHeads').textContent = Math.round(hPct) + '%';
+    document.getElementById('pctTails').textContent = Math.round(tPct) + '%';
+  }
+
+  /* ── CHALLENGE ── */
+  function initChallenge() {
+    predictions = Array(10).fill(null);
+    challengeDone = false;
+
+    const grid = document.getElementById('predGrid');
+    const labels = document.getElementById('predLabels');
+    grid.innerHTML = '';
+    labels.innerHTML = '';
+
+    for (let i = 0; i < 10; i++) {
+      const lbl = document.createElement('div');
+      lbl.className = 'pred-label';
+      lbl.textContent = `${i + 1}`;
+      labels.appendChild(lbl);
+
+      const btn = document.createElement('button');
+      btn.className = 'flip-btn-small';
+      btn.id = `pred-${i}`;
+      btn.textContent = '?';
+      btn.dataset.index = i;
+      btn.onclick = () => togglePrediction(i);
+      grid.appendChild(btn);
+    }
+
+    document.getElementById('challengeResult').className = 'challenge-result';
+    document.getElementById('challengeResult').textContent = '';
+    document.getElementById('btnRunChallenge').disabled = true;
+  }
+
+  function togglePrediction(index) {
+    if (challengeDone) return;
+    const btn = document.getElementById(`pred-${index}`);
+    const current = predictions[index];
+
+    if (current === null) {
+      predictions[index] = 'heads';
+      btn.textContent = '🌳';
+      btn.classList.add('selected-heads');
+      btn.classList.remove('selected-tails');
+    } else if (current === 'heads') {
+      predictions[index] = 'tails';
+      btn.textContent = '👑';
+      btn.classList.add('selected-tails');
+      btn.classList.remove('selected-heads');
+    } else {
+      predictions[index] = null;
+      btn.textContent = '?';
+      btn.classList.remove('selected-heads', 'selected-tails');
+    }
+
+    // Enable run if all predictions made
+    const allSet = predictions.every(p => p !== null);
+    document.getElementById('btnRunChallenge').disabled = !allSet;
+    ProbabilityUtils.playSound('tick');
+  }
+
+  function runChallenge() {
+    if (challengeDone) return;
+    challengeDone = true;
+    document.getElementById('btnRunChallenge').disabled = true;
+
+    const results = [];
+    let correct = 0;
+
+    for (let i = 0; i < 10; i++) {
+      const actual = Math.random() < 0.5 ? 'heads' : 'tails';
+      results.push(actual);
+      if (actual === predictions[i]) correct++;
+    }
+
+    // Animate results one by one
+    let idx = 0;
+    const interval = setInterval(() => {
+      const btn = document.getElementById(`pred-${idx}`);
+      const actual = results[idx];
+      const isCorrect = (actual === predictions[idx]);
+
+      btn.textContent = actual === 'heads' ? '🌳' : '👑';
+      btn.classList.remove('selected-heads', 'selected-tails');
+      btn.classList.add(isCorrect ? 'result-correct' : 'result-wrong');
+
+      ProbabilityUtils.playSound(isCorrect ? 'correct' : 'wrong');
+      idx++;
+
+      if (idx >= 10) {
+        clearInterval(interval);
+        showChallengeResult(correct);
+      }
+    }, 300);
+  }
+
+  function showChallengeResult(correct) {
+    const resEl = document.getElementById('challengeResult');
+    resEl.classList.add('show');
+
+    let stars, msg, cls;
+    if (correct >= 8) {
+      stars = 3; msg = `🌟🌟🌟 מדהים! ניחשת ${correct}/10 נכון! אלוף!`; cls = 'good';
+    } else if (correct >= 6) {
+      stars = 2; msg = `⭐⭐ כל הכבוד! ניחשת ${correct}/10 נכון!`; cls = 'ok';
+    } else {
+      stars = 1; msg = `⭐ ניחשת ${correct}/10 נכון. נסה שוב!`; cls = 'bad';
+    }
+
+    resEl.className = `challenge-result show ${cls}`;
+    resEl.textContent = msg;
+    earnedStars = stars;
+
+    if (stars === 3) {
+      ProbabilityUtils.playSound('complete');
+      ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 60);
+    } else {
+      ProbabilityUtils.playSound('correct');
+    }
+
+    // Show teaching popup after challenge
+    setTimeout(() => {
+      showPopup(
+        'מה למדנו? 🪙',
+        `ניחשת ${correct} מתוך 10! כאשר הסיכוי שווה (1/2), כל תוצאה מתרחשת בערך מחצית הזמן — אבל לא בהכרח בדיוק! ככל שמטילים יותר, ממוצע התוצאות מתקרב ל-50%.`
+      );
+    }, 800);
+  }
+
+  function resetChallenge() {
+    challengeDone = false;
+    initChallenge();
+  }
+
+  /* ── POPUP ── */
+  function showPopup(title, text) {
+    document.getElementById('popupTitle').textContent = title;
+    document.getElementById('popupText').textContent = text;
+    document.getElementById('teachingPopup').classList.add('active');
+  }
+
+  function closePopup() {
+    document.getElementById('teachingPopup').classList.remove('active');
+  }
+
+  /* ── FINISH MODULE ── */
+  function finishModule() {
+    const stars = earnedStars || (total > 0 ? 1 : 0);
+    const xp = stars * 30 + total * 2;
+
+    // Save to localStorage
+    localStorage.setItem('prob-module-1', JSON.stringify({
+      stars,
+      completed: true,
+      xp,
+      flips: total,
+      heads,
+      tails
+    }));
+
+    // Notify app if available
+    if (window.ProbabilityApp?.completeModule) {
+      window.ProbabilityApp.completeModule('01-coins', stars);
+    }
+
+    // Show celebration
+    const msgs = ['⭐', '⭐⭐', '⭐⭐⭐'];
+    const starsDisplay = msgs[Math.min(stars - 1, 2)] || '⭐';
+    ProbabilityUtils.showToast(`${starsDisplay} קיבלת ${stars} כוכבים! +${xp} XP`, 'success', 3500);
+    ProbabilityUtils.playSound('complete');
+    ProbabilityUtils.launchConfetti(document.getElementById('confettiWrap'), 80);
+
+    setTimeout(() => { window.location.href = '../index.html'; }, 3500);
+  }
+
+  /* ── INIT ── */
+  initChallenge();
+</script>
+</body>
+</html>
